@@ -59,7 +59,7 @@ struct Ball : public CircleShape {
     }
 
 
-    void setVelocity( sf::Vector2f vel) {
+    void setVelocity(sf::Vector2f vel) {
         res->SetLinearVelocity(b2Vec2(vel.x/pixels_per_meter,vel.y/pixels_per_meter));
     }
 
