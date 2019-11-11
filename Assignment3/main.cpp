@@ -20,6 +20,7 @@ int main()
     vector<Block> Menu_Wall;
 
     Clock Menu_Clock;
+
 //Bools
     bool Menu=true;
     bool Menu_Once=true;
@@ -78,8 +79,6 @@ int main()
             Menu_Wall.push_back(physics::createBox(World_Menu,0,800,800,1,b2_staticBody));
             physics::setBlockColor(Menu_Wall.back(),Color::Transparent);//3 Wall bottom
 
-
-
             Menu_Once=false;
         }
 
@@ -115,23 +114,23 @@ int main()
             Menu_CountDown=true;
         }
 
+        Menu_Paddle->setPosition(Vector2f(Menu_Ball->getPosition().x,700));
 
 
 
 
-
-        if(Menu_Paddle->getPosition().x<=0)
-        {
-            Menu_PaddleRight=false;
-            Menu_PaddleLeft=true;
-        }
-        if(Menu_Paddle->getPosition().x>=800)
-        {
-            Menu_PaddleLeft=false;
-            Menu_PaddleRight=true;
-        }
-        if(Menu_PaddleLeft==true) Menu_Paddle->setVelocity(Vector2f(60,0));
-        if(Menu_PaddleRight==true) Menu_Paddle->setVelocity(Vector2f(-60,0));
+//        if(Menu_Paddle->getPosition().x<=0)
+//        {
+//            Menu_PaddleRight=false;
+//            Menu_PaddleLeft=true;
+//        }
+//        if(Menu_Paddle->getPosition().x>=800)
+//        {
+//            Menu_PaddleLeft=false;
+//            Menu_PaddleRight=true;
+//        }
+//        if(Menu_PaddleLeft==true) Menu_Paddle->setVelocity(Vector2f(60,0));
+//        if(Menu_PaddleRight==true) Menu_Paddle->setVelocity(Vector2f(-60,0));
 
     if(Keyboard::isKeyPressed(Keyboard::A)==true)
     {
@@ -141,8 +140,10 @@ int main()
         window.draw(&Menu_Vertex[0],Menu_Vertex.size(),TrianglesFan);
         for(auto i:Menu_Background) window.draw(i);
         physics::displayWorld(World_Menu,window);
-        window.draw(*Menu_Paddle);
+//        window.draw(*Menu_Paddle);
         Menu_Paddle->updatePosition();
+//        window.draw(*Menu_Ball);
+        Menu_Ball->updatePosition();
 
     }
 
