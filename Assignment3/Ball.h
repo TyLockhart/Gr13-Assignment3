@@ -58,6 +58,16 @@ struct Ball : public CircleShape {
         return false;
     }
 
+    bool checkCollision(Block b1, Block b2) {
+        for (b2ContactEdge* edge = b1->GetContactList(); edge; edge = edge->next) {
+            if (edge->other == b2) {
+                if (edge->contact->IsTouching()) {
+                   return true;
+                }
+            }
+        }
+        return false;
+    }
 
     void setVelocity(sf::Vector2f vel) {
         res->SetLinearVelocity(b2Vec2(vel.x/pixels_per_meter,vel.y/pixels_per_meter));

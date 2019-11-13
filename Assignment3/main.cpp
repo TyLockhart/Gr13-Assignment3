@@ -1,5 +1,6 @@
 //!!work o nsetting paddle same x as ball
-//work on creating menu bricks correctly
+//!!work on creating menu bricks correctly
+//work on spinning menu bricks
 
 #include "physics.h"
 #include <vector>
@@ -20,7 +21,7 @@ int main()
     vector<Block> Menu_Wall,Menu_Brick;
     vector<Vector2f> Menu_BrickPoints;
 
-    Clock Menu_Clock;
+    Clock Menu_Clock,Menu_Clock2;
 
     Color Menu_BrickColor(Color(243,156,18,255));
 
@@ -94,10 +95,8 @@ int main()
             physics::setBlockColor(Menu_Wall.back(),Color::Transparent);//3 Wall bottom
 
         //Creating bricks
-        for(int i=0; i<=8; i++)
+        for(int i=1; i<=8; i++)
         {
-//        Menu_Brick.push_back(physics::createBox(World_Menu,25+Menu_BrickSpaceX,25+Menu_BrickSpaceY,65,35,b2_staticBody));
-//        physics::setBlockColor(Menu_Brick.back(),Menu_BrickColor);
         Menu_Brick.push_back(physics::createPolygon(World_Menu,26+Menu_BrickSpaceX,25+Menu_BrickSpaceY,Menu_BrickPoints,b2_staticBody));
         physics::setBlockColor(Menu_Brick.back(),Menu_BrickColor);
 
@@ -148,15 +147,31 @@ int main()
         }
         //End gradient
 
+
+
+
+
         for(int i=0;i<Menu_Brick.size();i++){
-        if(physics::checkCollision(Menu_Brick[i])==true)
+        if(Menu_Ball->checkCollision(Menu_Brick[i])==true)
         {
+            if(static_cast<Shape *>(Menu_Brick[i]->GetUserData())->getFillColor()!=Menu_BrickColor){
+            Menu_Brick[i]->SetType(b2_dynamicBody);
+            physics::spin(Menu_Brick[i],17);
+            Menu_Clock2.restart();
+            }
+            if(static_cast<Shape *>(Menu_Brick[i]->GetUserData())->getFillColor()==Menu_BrickColor){
+            physics::setBlockColor(Menu_Brick[i],Color(rand()%255,rand()%255,rand()%255));
+            }
 
 
 
+
+
+            if(Menu_Clock2.getElapsedTime().asSeconds()>=1.05){
             if(physics::isDestroyed(Menu_Brick[i])!=true){
             physics::deleteBlock(World_Menu,Menu_Brick[i]);
             Menu_Brick.erase(Menu_Brick.begin()+i);
+            }
             }
         }
         }
@@ -165,17 +180,14 @@ int main()
 
 
 
-
-
-
     //Paddle following ball
     if(Menu_Ball->getPosition().x>Menu_Paddle->getPosition().x&&Menu_Ball->getPosition().y<700)
     {
-        Menu_Paddle->setVelocity(Vector2f(280,0));
+        Menu_Paddle->setVelocity(Vector2f(275,0));
     }
     else if(Menu_Ball->getPosition().x<Menu_Paddle->getPosition().x&&Menu_Ball->getPosition().y<700)
     {
-        Menu_Paddle->setVelocity(Vector2f(-280,0));
+        Menu_Paddle->setVelocity(Vector2f(-275,0));
     }
     //End paddle following ball
 
