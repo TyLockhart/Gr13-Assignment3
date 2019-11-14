@@ -1,6 +1,7 @@
 //!!work o nsetting paddle same x as ball
 //!!work on creating menu bricks correctly
-//work on spinning menu bricks
+//!!work on spinning menu bricks
+//work on menu text and paly  button
 
 #include "physics.h"
 #include <vector>
@@ -20,6 +21,10 @@ int main()
     vector<Vertex> Menu_Vertex;
     vector<Block> Menu_Wall,Menu_Brick;
     vector<Vector2f> Menu_BrickPoints;
+    vector<Text> Menu_Text;
+
+    Font Game_Font1;
+    Text Menu_Text1;
 
     Clock Menu_Clock,Menu_Clock2;
 
@@ -32,6 +37,7 @@ int main()
     bool Menu_PaddleLeft=false;
     bool Menu_CountDown=false;
     bool Menu_CountUp=false;
+    bool Menu_DeleteBlock=false;
 
 //Int
     int Menu_VxR=142;
@@ -48,6 +54,15 @@ int main()
     Menu_BrickPoints.push_back(Vector2f(40,34));
     Menu_BrickPoints.push_back(Vector2f(0,40));
     Menu_BrickPoints.push_back(Vector2f(0,0));
+
+//Font
+    Game_Font1.loadFromFile("Game_Font1.ttf");
+
+
+
+
+
+
 
     RenderWindow window(VideoMode(800,800),"Assignment3: Brick Breaker");
     window.setFramerateLimit(60);
@@ -74,15 +89,28 @@ int main()
             Menu_PaddleLeft=false;
             Menu_CountDown=true;
             Menu_CountUp=false;
+            Menu_DeleteBlock=false;
 
             for(int i=0; i<Menu_Wall.size(); i++){
             if(physics::isDestroyed(Menu_Wall[i])!=true)
             {
                 physics::deleteBlock(World_Menu,Menu_Wall[i]);
+                Menu_Wall.clear();
             }
             }
+            for(int i=0; i<Menu_Brick.size(); i++){
+            if(physics::isDestroyed(Menu_Brick[i])!=true)
+            {
+                physics::deleteBlock(World_Menu,Menu_Brick[i]);
+                Menu_Brick.clear();
+            }
+            }
+            Menu_Background.clear();
+
 
             Menu_Paddle=new Paddle(World_Menu,400,700,150,25);
+            Menu_Paddle->setOutlineColor(Color(149,165,166,255));
+            Menu_Paddle->setOutlineThickness(6);
             Menu_Ball=new Ball(World_Menu,400,500,25);
 
             Menu_Wall.push_back(physics::createBox(World_Menu,-1,0,1,800,b2_staticBody));
@@ -110,6 +138,31 @@ int main()
         }
         }
         //End of creating bricks
+
+        //Creating rectangle shapes
+        Menu_Background.push_back(RectangleShape(Vector2f(165,40)));
+        Menu_Background.back().setFillColor(Color(149,165,166,255));
+
+        Menu_Text.push_back(Text());
+        Menu_Text.back().setCharacterSize(160);
+        Menu_Text.back().setFont(Game_Font1);
+        Menu_Text.back().setPosition(Vector2f(300,250));
+        Menu_Text.back().setString("BRICK");
+        Menu_Text.back().setFillColor(Color::White);
+        Menu_Text.back().setOutlineColor(Color::Black);
+        Menu_Text.back().setOutlineThickness(7);
+        Menu_Text.back().setOrigin(Vector2f(Menu_Text.back().getCharacterSize()/2,Menu_Text.back().getCharacterSize()/2));
+
+        Menu_Text.push_back(Text());
+        Menu_Text.back().setCharacterSize(100);
+        Menu_Text.back().setFont(Game_Font1);
+        Menu_Text.back().setPosition(Vector2f(300,250));
+        Menu_Text.back().setString("BREAKER");
+        Menu_Text.back().setFillColor(Color::White);
+        Menu_Text.back().setOutlineColor(Color::Black);
+        Menu_Text.back().setOutlineThickness(7);
+        Menu_Text.back().setOrigin(Vector2f(Menu_Text.back().getCharacterSize()/2,Menu_Text.back().getCharacterSize()/2));
+
 
             Menu_Once=false;
         }
@@ -150,7 +203,6 @@ int main()
 
 
 
-
         for(int i=0;i<Menu_Brick.size();i++){
         if(Menu_Ball->checkCollision(Menu_Brick[i])==true)
         {
@@ -162,18 +214,17 @@ int main()
             if(static_cast<Shape *>(Menu_Brick[i]->GetUserData())->getFillColor()==Menu_BrickColor){
             physics::setBlockColor(Menu_Brick[i],Color(rand()%255,rand()%255,rand()%255));
             }
-
-
-
-
-
-            if(Menu_Clock2.getElapsedTime().asSeconds()>=1.05){
+        }
+            //Deleting any dynamic bricks after 0.5s after hitting any brick
+            if(Menu_Clock2.getElapsedTime().asSeconds()>=0.5){
             if(physics::isDestroyed(Menu_Brick[i])!=true){
+            if(Menu_Brick[i]->GetType()==b2_dynamicBody){
             physics::deleteBlock(World_Menu,Menu_Brick[i]);
             Menu_Brick.erase(Menu_Brick.begin()+i);
             }
             }
-        }
+            }
+
         }
 
 
@@ -192,8 +243,6 @@ int main()
     //End paddle following ball
 
 
-
-
         window.draw(&Menu_Vertex[0],Menu_Vertex.size(),TrianglesFan);//Background gradient
         for(auto i:Menu_Background) window.draw(i);
 //        for(auto i:Menu_Brick) window.draw(i);
@@ -202,7 +251,7 @@ int main()
         Menu_Paddle->updatePosition();
 //        window.draw(*Menu_Ball);
         Menu_Ball->updatePosition();
-
+        for(auto i:Menu_Text) window.draw(i);
     }
 
 

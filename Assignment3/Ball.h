@@ -28,10 +28,12 @@ struct Ball : public CircleShape {
         this->setOrigin(r,r);
         this->setPosition(x,y);
         this->setFillColor(Color::White);
+        this->setOutlineColor(sf::Color(149,165,166,255));
+        this->setOutlineThickness(6);
 
         res->SetUserData(this);
 
-        speed = 350;
+        speed = 1650;
         angle = (-45.0)/deg_per_rad;
         res->SetLinearVelocity(b2Vec2(speed*cos(angle)/pixels_per_meter,speed*sin(angle)/pixels_per_meter));
 

@@ -28,6 +28,7 @@ struct Paddle : public RectangleShape { //inheriting all of RectangleShape
         this->setPosition(x + width/2.0, y + height/2.0);
         this->setFillColor(sf::Color::White);
 
+
         res->SetUserData(this);
     }
 
