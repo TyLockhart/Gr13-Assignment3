@@ -33,7 +33,7 @@ struct Ball : public CircleShape {
 
         res->SetUserData(this);
 
-        speed = 1650;
+        speed = 1650; //1650 & 350
         angle = (-45.0)/deg_per_rad;
         res->SetLinearVelocity(b2Vec2(speed*cos(angle)/pixels_per_meter,speed*sin(angle)/pixels_per_meter));
 
