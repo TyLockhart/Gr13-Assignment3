@@ -182,6 +182,16 @@ namespace physics{
         shape->setFillColor(c);
     }
 
+    void setOutlineThickness(Block b, float thickness) {
+        sf::Shape* shape = static_cast<sf::Shape*>(b->GetUserData());
+        shape->setOutlineThickness(thickness);
+    }
+
+    void setBlockOutline(Block b, sf::Color c) {
+        sf::Shape* shape = static_cast<sf::Shape*>(b->GetUserData());
+        shape->setOutlineColor(c);
+    }
+
     //function that checks collision between two blocks
     bool checkCollision(Block b1, Block b2) {
         for (b2ContactEdge* edge = b1->GetContactList(); edge; edge = edge->next) {

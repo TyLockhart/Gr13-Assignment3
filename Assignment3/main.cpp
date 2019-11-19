@@ -5,6 +5,7 @@
 //!!work on spinning menu bricks
 //!!work on menu text and paly  button
 //Work on creating level1 bricks
+//Work on colouring shapes by changing like gradient and add paddle/ball
 
 #include "physics.h"
 #include <vector>
@@ -30,31 +31,19 @@ int main()
     Font Game_Font1;
 
     Color Menu_BrickColor(Color(243,156,18,255));
+    Color Level1_BrickColor(Color(232,189,16,150+rand()%55));
 
 //Bools
     bool OV_Mouse=true;
-
     bool Menu=true;
     bool Menu_Once=true;
-    bool Menu_PaddleRight=false;
-    bool Menu_PaddleLeft=false;
-    bool Menu_CountDown=false;
-    bool Menu_CountUp=false;
-    bool Menu_DeleteBlock=false;
 
-    bool Level1=false;
-    bool Level1_Once=false;
+    bool Menu_PaddleRight,Menu_PaddleLeft,Menu_CountDown,Menu_CountUp,Menu_DeleteBlock;
+    bool Level1,Level1_Once;
 
 //Int
-    int Menu_VxR=142;
-    int Menu_VxG=68;
-    int Menu_VxB=173;
-    int Menu_BrickSpaceX=0;
-    int Menu_BrickSpaceY=0;
-
-    int Level1_Counter=0;
-    int Level1_CounterRemind=0;
-    int Level1_i=0;
+    int Menu_VxR,Menu_VxG,Menu_VxB,Menu_BrickSpaceX,Menu_BrickSpaceY;
+    int Level1_Counter,Level1_CounterRemind,Level1_i,Level1_BrickSpaceX,Level1_BrickSpaceY;
 
 //Points
     Menu_BrickPoints.push_back(Vector2f(0,0));
@@ -71,15 +60,12 @@ int main()
 
 
 
-
-
-
     RenderWindow window(VideoMode(800,800),"Assignment3: Brick Breaker");
     window.setFramerateLimit(60);
     b2World World_Menu(b2Vec2(0.0,0.0));
+    b2World World_Level1(b2Vec2(0.0,0.0));
     Paddle *Menu_Paddle;
     Ball *Menu_Ball;
-
 
     while(window.isOpen()&& !Keyboard::isKeyPressed(Keyboard::Escape))
     {
@@ -97,7 +83,7 @@ int main()
 //    cout<<Mouse::getPosition(window).x<<": Mouse X-Pos"<<endl;
 //    cout<<Mouse::getPosition(window).y<<": Mouse Y-Pos"<<endl;
 //    cout<<"---"<<endl;
-    if(OV_Mouse==true) cout<<"Clicked Mouse"<<endl;
+//    if(OV_Mouse==true) cout<<"Clicked Mouse"<<endl;
 
     if(Menu==true)
     {
@@ -108,6 +94,12 @@ int main()
             Menu_CountDown=true;
             Menu_CountUp=false;
             Menu_DeleteBlock=false;
+
+            Menu_VxR=142;
+            Menu_VxG=68;
+            Menu_VxB=173;
+            Menu_BrickSpaceX=0;
+            Menu_BrickSpaceY=0;
 
             Menu_Clock.resize(2);
 
@@ -133,6 +125,8 @@ int main()
             Menu_Paddle->setOutlineColor(Color(149,165,166,255));
             Menu_Paddle->setOutlineThickness(6);
             Menu_Ball=new Ball(World_Menu,400,500,25);
+            Menu_Ball->setOutlineColor(Color(149,165,166,255));
+            Menu_Ball->setOutlineThickness(6);
 
             Menu_Wall.push_back(physics::createBox(World_Menu,-1,0,1,800,b2_staticBody));
             physics::setBlockColor(Menu_Wall.back(),Color::Transparent);//0 Wall left
@@ -202,9 +196,9 @@ int main()
         //Menu background gradient
             Menu_Vertex.clear();
             Menu_Vertex.push_back(Vertex(Vector2f(0,0),Color(Menu_VxR,Menu_VxG,Menu_VxB)));
-            Menu_Vertex.push_back(Vertex(Vector2f(800,0),Color(Menu_VxR,Menu_VxG,Menu_VxB)));
+            Menu_Vertex.push_back(Vertex(Vector2f(800,0),Color(Menu_VxR,125,Menu_VxB)));
             Menu_Vertex.push_back(Vertex(Vector2f(800,800),Color(Menu_VxR,Menu_VxG,Menu_VxB)));
-            Menu_Vertex.push_back(Vertex(Vector2f(0,800),Color(Menu_VxR,Menu_VxG,Menu_VxB)));
+            Menu_Vertex.push_back(Vertex(Vector2f(0,800),Color(Menu_VxR,125,Menu_VxB)));
             Menu_Vertex.push_back(Vertex(Vector2f(0,0),Color(Menu_VxR,Menu_VxG,Menu_VxB)));
 
         if(Menu_CountDown==true&&Menu_Clock[0].getElapsedTime().asSeconds()>=0.00001)
@@ -304,8 +298,10 @@ int main()
             Level1_Counter=0;
             Level1_CounterRemind=0;
             Level1_i=0;
+            Level1_BrickSpaceX=0;
+            Level1_BrickSpaceY=0;
 
-            Level1_Clock.resize(2);
+            Level1_Clock.resize(1);
             Level1_Clock[0].restart();
 
             //Creating rectangle shapes
@@ -316,33 +312,39 @@ int main()
             Level1_Once=false;
         }
 
-    if(Level1_Clock[0].getElapsedTime().asSeconds()<5)
+    //Creating bricks
+    if(Level1_Clock[0].getElapsedTime().asSeconds()>0.1&&Level1_Counter<=48)
     {
         Level1_CounterRemind=Level1_Counter;
         Level1_Counter++;
-
+        Level1_Clock[0].restart();
+        cout<<"spawn shape"<<endl;
     }
-    if(Level1_Counter>Level1_CounterRemind)
+    if(Level1_Counter>Level1_CounterRemind&&Level1_Brick.size()<=47)
     {
-        //Creating bricks
-        Level1_Brick.push_back(physics::createPolygon(World_Menu,26+Menu_BrickSpaceX,25+Menu_BrickSpaceY,Menu_BrickPoints,b2_staticBody));
-        physics::setBlockColor(Level1_Brick.back(),Menu_BrickColor);
+        Level1_Brick.push_back(physics::createPolygon(World_Level1,26+Level1_BrickSpaceX,25+Level1_BrickSpaceY,Menu_BrickPoints,b2_staticBody));
+        physics::setBlockColor(Level1_Brick.back(),Level1_BrickColor);
+        physics::setOutlineThickness(Level1_Brick.back(),3);
+        physics::setBlockColor(Level1_Brick.back(),Color(Level1_BrickColor));
 
+        cout<<"spawned"<<endl;
         Level1_i++;
 
-        Menu_BrickSpaceX+=95;
+        Level1_BrickSpaceX+=95;
 
-        if(Level1_i==8&&Menu_BrickSpaceY<=240)
+        if(Level1_i==8&&Level1_BrickSpaceY<=240)
         {
             Level1_i=0;
-            Menu_BrickSpaceX=0;
-            Menu_BrickSpaceY+=60;
+            Level1_BrickSpaceX=0;
+            Level1_BrickSpaceY+=60;
         }
-
-        //End of creating bricks
-
+        Level1_CounterRemind=Level1_Counter;
     }
-
+    //End of creating bricks
+    if(Level1_Counter==47)
+    {
+        //Start LV1
+    }
 
 
 //    if(Level1_Counter==48)
@@ -351,6 +353,8 @@ int main()
 
 
 
+        for(auto i : Level1_Background) window.draw(i);
+        physics::displayWorld(World_Level1,window);
 
 
     }

@@ -28,8 +28,6 @@ struct Ball : public CircleShape {
         this->setOrigin(r,r);
         this->setPosition(x,y);
         this->setFillColor(Color::White);
-        this->setOutlineColor(sf::Color(149,165,166,255));
-        this->setOutlineThickness(6);
 
         res->SetUserData(this);
 
