@@ -1,11 +1,13 @@
 //LEARNED: ALL VECTORS NEED A PUSHBACK FIRST, also learned resize
+//future: can add some health losing/point gaining iamges on menu/explosions on removed blocks
 
 //!!work o nsetting paddle same x as ball
 //!!work on creating menu bricks correctly
 //!!work on spinning menu bricks
 //!!work on menu text and paly  button
-//Work on creating level1 bricks
-//Work on colouring shapes by changing like gradient and add paddle/ball
+//!!Work on creating level1 bricks
+//!!Work on colouring shapes by changing like gradient and add paddle/ball
+//work on creating/moving paddle ball point systems
 
 #include "physics.h"
 #include <vector>
@@ -23,7 +25,7 @@ int main()
 //Declares
     vector<RectangleShape> Menu_Background,Level1_Background;
     vector<Vertex> Menu_Vertex;
-    vector<Block> Menu_Wall,Menu_Brick,Level1_Brick;
+    vector<Block> Menu_Wall,Menu_Brick,Level1_Brick,Level1_Wall;
     vector<Vector2f> Menu_BrickPoints;
     vector<Text> Menu_Text;
     vector<Clock> Menu_Clock,Level1_Clock;
@@ -31,7 +33,14 @@ int main()
     Font Game_Font1;
 
     Color Menu_BrickColor(Color(243,156,18,255));
-    Color Level1_BrickColor(Color(232,189,16,150+rand()%55));
+    Color Level1_BrickColor(Color(142,68,173,255));
+
+    Color Level1_BRedC(Color(231,76,60,255));
+    Color Level1_BOrangeC(Color(230,126,34,255));
+    Color Level1_BYellowC(Color(241,196,15,255));
+    Color Level1_BGreenC(Color(46,204,113,255));
+    Color Level1_BBlueC(Color(52,152,219,255));
+    Color Level1_BPurpleC(Color(155,89,182,255));
 
 //Bools
     bool OV_Mouse=true;
@@ -40,10 +49,11 @@ int main()
 
     bool Menu_PaddleRight,Menu_PaddleLeft,Menu_CountDown,Menu_CountUp,Menu_DeleteBlock;
     bool Level1,Level1_Once;
-
+    bool Level1_CountDown=false;
+    bool Level1_CountUp=false;
 //Int
     int Menu_VxR,Menu_VxG,Menu_VxB,Menu_BrickSpaceX,Menu_BrickSpaceY;
-    int Level1_Counter,Level1_CounterRemind,Level1_i,Level1_BrickSpaceX,Level1_BrickSpaceY;
+    int Level1_Counter,Level1_CounterRemind,Level1_i,Level1_BrickSpaceX,Level1_BrickSpaceY,Level1_BCR;
 
 //Points
     Menu_BrickPoints.push_back(Vector2f(0,0));
@@ -64,8 +74,8 @@ int main()
     window.setFramerateLimit(60);
     b2World World_Menu(b2Vec2(0.0,0.0));
     b2World World_Level1(b2Vec2(0.0,0.0));
-    Paddle *Menu_Paddle;
-    Ball *Menu_Ball;
+    Paddle *Menu_Paddle,*Level1_Paddle;
+    Ball *Menu_Ball,*Level1_Ball;
 
     while(window.isOpen()&& !Keyboard::isKeyPressed(Keyboard::Escape))
     {
@@ -123,10 +133,10 @@ int main()
 
             Menu_Paddle=new Paddle(World_Menu,400,700,150,25);
             Menu_Paddle->setOutlineColor(Color(149,165,166,255));
-            Menu_Paddle->setOutlineThickness(6);
+            Menu_Paddle->setOutlineThickness(4);
             Menu_Ball=new Ball(World_Menu,400,500,25);
             Menu_Ball->setOutlineColor(Color(149,165,166,255));
-            Menu_Ball->setOutlineThickness(6);
+            Menu_Ball->setOutlineThickness(4);
 
             Menu_Wall.push_back(physics::createBox(World_Menu,-1,0,1,800,b2_staticBody));
             physics::setBlockColor(Menu_Wall.back(),Color::Transparent);//0 Wall left
@@ -295,13 +305,17 @@ int main()
     {
         if(Level1_Once==true)
         {
+            Level1_CountDown=false;
+            Level1_CountUp=true;
+
             Level1_Counter=0;
             Level1_CounterRemind=0;
             Level1_i=0;
             Level1_BrickSpaceX=0;
             Level1_BrickSpaceY=0;
+            Level1_BCR=143;
 
-            Level1_Clock.resize(1);
+            Level1_Clock.resize(2);
             Level1_Clock[0].restart();
 
             //Creating rectangle shapes
@@ -309,27 +323,83 @@ int main()
             Level1_Background.back().setFillColor(Color(Menu_BrickColor));
             Level1_Background.back().setPosition(Vector2f(0,0));
 
+            //Paddle and walls
+            Level1_Paddle=new Paddle(World_Level1,400,700,150,25);
+            Level1_Paddle->setOutlineColor(Color(149,165,166,255));
+            Level1_Paddle->setOutlineThickness(4);
+            Level1_Ball=new Ball(World_Level1,400,500,25);
+            Level1_Ball->setOutlineColor(Color(149,165,166,255));
+            Level1_Ball->setOutlineThickness(4);
+
+            Level1_Wall.push_back(physics::createBox(World_Level1,-1,0,1,800,b2_staticBody));
+            physics::setBlockColor(Level1_Wall.back(),Color::Transparent);//0 Wall left
+            Level1_Wall.push_back(physics::createBox(World_Level1,800,0,1,800,b2_staticBody));
+            physics::setBlockColor(Level1_Wall.back(),Color::Transparent);//1 Wall right
+            Level1_Wall.push_back(physics::createBox(World_Level1,0,-1,800,1,b2_staticBody));
+            physics::setBlockColor(Level1_Wall.back(),Color::Transparent);//2 Wall top
+            Level1_Wall.push_back(physics::createBox(World_Level1,0,800,800,1,b2_staticBody));
+            physics::setBlockColor(Level1_Wall.back(),Color::Transparent);//3 Wall bottom
+            //end paddle walls
+
             Level1_Once=false;
         }
 
+    //Menu background gradient
+    if(Level1_Brick.size()==48){
+    for(int i=0; i<=7;i++) physics::setBlockColor(Level1_Brick[i],Level1_BRedC);//red
+    for(int i=8; i<=15;i++) physics::setBlockColor(Level1_Brick[i],Level1_BOrangeC);//orange
+    for(int i=16; i<=23;i++) physics::setBlockColor(Level1_Brick[i],Level1_BYellowC);//yellow
+    for(int i=24; i<=31;i++) physics::setBlockColor(Level1_Brick[i],Level1_BGreenC);//green
+    for(int i=32; i<=39;i++) physics::setBlockColor(Level1_Brick[i],Level1_BBlueC);//blue
+    for(int i=40; i<=47;i++) physics::setBlockColor(Level1_Brick[i],Level1_BPurpleC);//purple
+    }
+        if(Level1_CountDown==true&&Level1_Clock[1].getElapsedTime().asSeconds()>=0.00001)
+        {
+            Level1_BRedC.r--;
+            Level1_BOrangeC.r--;
+            Level1_BYellowC.r--;
+            Level1_BGreenC.g--;
+            Level1_BBlueC.b--;
+            Level1_BPurpleC.r--;
+            Level1_Clock[1].restart();
+        }
+        if(Level1_CountUp==true&&Level1_Clock[1].getElapsedTime().asSeconds()>=0.00001)
+        {
+            Level1_BRedC.r++;
+            Level1_BOrangeC.r++;
+            Level1_BYellowC.r++;
+            Level1_BGreenC.g++;
+            Level1_BBlueC.b++;
+            Level1_BPurpleC.r++;
+            Level1_Clock[1].restart();
+        }
+        if(Level1_BRedC.r==180)
+        {
+            Level1_CountDown=false;
+            Level1_CountUp=true;
+        }
+        if(Level1_BRedC.r==231)
+        {
+            Level1_CountUp=false;
+            Level1_CountDown=true;
+        }
+        //End gradient
+
     //Creating bricks
-    if(Level1_Clock[0].getElapsedTime().asSeconds()>0.1&&Level1_Counter<=48)
+    if(Level1_Clock[0].getElapsedTime().asMilliseconds()>0.1&&Level1_Counter<=48)//change to asseconds if wanted slower creation
     {
         Level1_CounterRemind=Level1_Counter;
         Level1_Counter++;
         Level1_Clock[0].restart();
-        cout<<"spawn shape"<<endl;
     }
     if(Level1_Counter>Level1_CounterRemind&&Level1_Brick.size()<=47)
     {
         Level1_Brick.push_back(physics::createPolygon(World_Level1,26+Level1_BrickSpaceX,25+Level1_BrickSpaceY,Menu_BrickPoints,b2_staticBody));
         physics::setBlockColor(Level1_Brick.back(),Level1_BrickColor);
         physics::setOutlineThickness(Level1_Brick.back(),3);
-        physics::setBlockColor(Level1_Brick.back(),Color(Level1_BrickColor));
+        physics::setBlockColor(Level1_Brick.back(),Color(0,0,0,255));
 
-        cout<<"spawned"<<endl;
         Level1_i++;
-
         Level1_BrickSpaceX+=95;
 
         if(Level1_i==8&&Level1_BrickSpaceY<=240)
@@ -341,22 +411,45 @@ int main()
         Level1_CounterRemind=Level1_Counter;
     }
     //End of creating bricks
-    if(Level1_Counter==47)
+    if(Level1_Counter<47)
     {
-        //Start LV1
+        Level1_Ball->speed=1;
+    }
+    if(Level1_Counter>=47)
+    {
+        Level1_Ball->speed=350;
+        //moving paddle
+        if(Keyboard::isKeyPressed(Keyboard::A)==true) Level1_Paddle->setVelocity(Vector2f(-300,0));
+        else if(Keyboard::isKeyPressed(Keyboard::D)==false)
+        {
+            Level1_Paddle->setVelocity(Vector2f(0,0));
+        }
+        if(Keyboard::isKeyPressed(Keyboard::D)==true) Level1_Paddle->setVelocity(Vector2f(300,0));
+        else if(Keyboard::isKeyPressed(Keyboard::A)==false)
+        {
+            Level1_Paddle->setVelocity(Vector2f(0,0));
+        }
+        //end paddle move
+
+        if(Level1_Paddle->getPosition().x<=75)
+        {
+            Level1_Paddle->removeBody();
+
+            Level1_Paddle=new Paddle(World_Level1,76,700,150,25);//working here from nov20
+            Level1_Paddle->setOutlineColor(Color(149,165,166,255));
+            Level1_Paddle->setOutlineThickness(4);
+
+//            Level1_Paddle->setPosition(Vector2f(76,700));
+        }
+        cout<<Level1_Paddle->getPosition().x<<endl;
     }
 
 
-//    if(Level1_Counter==48)
 
-    //gradient drawing
-
-
-
+        Level1_Ball->updatePosition();
+        Level1_Paddle->updatePosition();
         for(auto i : Level1_Background) window.draw(i);
         physics::displayWorld(World_Level1,window);
-
-
     }
 
 
