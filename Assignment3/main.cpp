@@ -7,7 +7,8 @@
 //!!work on menu text and paly  button
 //!!Work on creating level1 bricks
 //!!Work on colouring shapes by changing like gradient and add paddle/ball
-//work on creating/moving paddle ball point systems
+//work on creating/moving paddle!! ball point systems
+//work on destrouying bricks
 
 #include "physics.h"
 #include <vector>
@@ -49,8 +50,9 @@ int main()
 
     bool Menu_PaddleRight,Menu_PaddleLeft,Menu_CountDown,Menu_CountUp,Menu_DeleteBlock;
     bool Level1,Level1_Once;
-    bool Level1_CountDown=false;
-    bool Level1_CountUp=false;
+    bool Level1_CountDown;
+    bool Level1_CountUp;
+    bool Level1_BottomOnce;
 //Int
     int Menu_VxR,Menu_VxG,Menu_VxB,Menu_BrickSpaceX,Menu_BrickSpaceY;
     int Level1_Counter,Level1_CounterRemind,Level1_i,Level1_BrickSpaceX,Level1_BrickSpaceY,Level1_BCR;
@@ -257,9 +259,6 @@ int main()
             physics::deleteBlock(World_Menu,Menu_Brick[i]);
             Menu_Brick.erase(Menu_Brick.begin()+i);
             }
-
-
-
         }
 
     //Paddle following ball
@@ -307,6 +306,7 @@ int main()
         {
             Level1_CountDown=false;
             Level1_CountUp=true;
+            Level1_BottomOnce=false;
 
             Level1_Counter=0;
             Level1_CounterRemind=0;
@@ -315,7 +315,7 @@ int main()
             Level1_BrickSpaceY=0;
             Level1_BCR=143;
 
-            Level1_Clock.resize(2);
+            Level1_Clock.resize(4);
             Level1_Clock[0].restart();
 
             //Creating rectangle shapes
@@ -344,7 +344,7 @@ int main()
             Level1_Once=false;
         }
 
-    //Menu background gradient
+    //Level1 brick background gradient
     if(Level1_Brick.size()==48){
     for(int i=0; i<=7;i++) physics::setBlockColor(Level1_Brick[i],Level1_BRedC);//red
     for(int i=8; i<=15;i++) physics::setBlockColor(Level1_Brick[i],Level1_BOrangeC);//orange
@@ -430,20 +430,93 @@ int main()
             Level1_Paddle->setVelocity(Vector2f(0,0));
         }
         //end paddle move
-
+        //check if paddle is going outside
         if(Level1_Paddle->getPosition().x<=75)
         {
             Level1_Paddle->removeBody();
 
-            Level1_Paddle=new Paddle(World_Level1,76,700,150,25);//working here from nov20
+            Level1_Paddle=new Paddle(World_Level1,1,700,150,25);
             Level1_Paddle->setOutlineColor(Color(149,165,166,255));
             Level1_Paddle->setOutlineThickness(4);
-
-//            Level1_Paddle->setPosition(Vector2f(76,700));
         }
-        cout<<Level1_Paddle->getPosition().x<<endl;
-    }
+        if(Level1_Paddle->getPosition().x>=725)
+        {
+            Level1_Paddle->removeBody();
 
+            Level1_Paddle=new Paddle(World_Level1,649,700,150,25);
+            Level1_Paddle->setOutlineColor(Color(149,165,166,255));
+            Level1_Paddle->setOutlineThickness(4);
+        }
+        //end check
+
+    //ball glitch into wall fix//untested
+    if(Level1_Ball->getPosition().x<0&&Level1_Ball->getPosition().y<0&&Level1_Ball->getPosition().x>800&&Level1_Ball->getPosition().y>800)
+    {
+        cout<<"ball has left the box"<<endl;
+        Level1_Ball->removeBody();
+        Level1_Ball=new Ball(World_Level1,Level1_Paddle->getPosition().x,Level1_Paddle->getPosition().y-20,25);
+        Level1_Ball->setOutlineColor(Color(149,165,166,255));
+        Level1_Ball->setOutlineThickness(4);
+        //remove life
+    }
+    //if ball is on the bottom layer for 10s, reset pos
+    if(Level1_Ball->getPosition().y>700&&Level1_Clock[2].getElapsedTime().asSeconds()>10)
+    {
+            Level1_Ball->removeBody();
+            Level1_Ball=new Ball(World_Level1,Level1_Paddle->getPosition().x,Level1_Paddle->getPosition().y-20,25);
+            Level1_Ball->setOutlineColor(Color(149,165,166,255));
+            Level1_Ball->setOutlineThickness(4);
+    }
+    if(Level1_Ball->getPosition().y<670) Level1_Clock[2].restart();
+    //end reset
+
+if(Level1_Brick.size()==48){
+    for(int i=0;i<=7;i++){//red bricks collision
+        if(Level1_Ball->checkCollision(Level1_Brick[i])==true)
+        {
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()!=Level1_BRedC){
+            Level1_Brick[i]->SetType(b2_dynamicBody);
+            physics::spin(Level1_Brick[i],17);
+            Level1_Clock[3].restart();
+            }
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()==Level1_BRedC){
+            physics::setBlockColor(Level1_Brick[i],Color(rand()%255,rand()%255,rand()%255));
+            }
+        }
+            //Deleting any dynamic bricks after 0.5s after hitting any brick
+            if(Level1_Clock[3].getElapsedTime().asSeconds()>=0.5&&physics::isDestroyed(Level1_Brick[i])!=true&&Level1_Brick[i]->GetType()==b2_dynamicBody){
+            physics::deleteBlock(World_Level1,Level1_Brick[i]);
+            Level1_Brick.erase(Level1_Brick.begin()+i);
+            }
+        }
+
+        for(int i=40;i<=47;i++){//purple bricks collision
+        if(Level1_Ball->checkCollision(Level1_Brick[i])==true)
+        {
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()!=Level1_BPurpleC){
+            Level1_Brick[i]->SetType(b2_dynamicBody);
+            physics::spin(Level1_Brick[i],17);
+            Level1_Clock[3].restart();
+            }
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()==Level1_BPurpleC){
+            physics::setBlockColor(Level1_Brick[i],Color(rand()%255,rand()%255,rand()%255));
+            }
+        }
+            //Deleting any dynamic bricks after 0.5s after hitting any brick
+            if(Level1_Clock[3].getElapsedTime().asSeconds()>=0.5&&physics::isDestroyed(Level1_Brick[i])!=true&&Level1_Brick[i]->GetType()==b2_dynamicBody){
+            physics::deleteBlock(World_Level1,Level1_Brick[i]);
+            Level1_Brick.erase(Level1_Brick.begin()+i);
+            }//wokring here nov21
+        }
+    }
+//Menu background gradient
+//    if(Level1_Brick.size()==48){
+//    for(int i=0; i<=7;i++) physics::setBlockColor(Level1_Brick[i],Level1_BRedC);//red
+//    for(int i=8; i<=15;i++) physics::setBlockColor(Level1_Brick[i],Level1_BOrangeC);//orange
+//    for(int i=16; i<=23;i++) physics::setBlockColor(Level1_Brick[i],Level1_BYellowC);//yellow
+//    for(int i=24; i<=31;i++) physics::setBlockColor(Level1_Brick[i],Level1_BGreenC);//green
+//    for(int i=32; i<=39;i++) physics::setBlockColor(Level1_Brick[i],Level1_BBlueC);//blue
+//    for(int i=40; i<=47;i++) physics::setBlockColor(Level1_Brick[i],Level1_BPurpleC);//purple
 
 
         Level1_Ball->updatePosition();
