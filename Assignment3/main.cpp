@@ -52,10 +52,11 @@ int main()
     bool Level1,Level1_Once;
     bool Level1_CountDown;
     bool Level1_CountUp;
-    bool Level1_BottomOnce;
+    bool Level1_AllowCollisions;
+    bool Level1_CreateBricks;
 //Int
     int Menu_VxR,Menu_VxG,Menu_VxB,Menu_BrickSpaceX,Menu_BrickSpaceY;
-    int Level1_Counter,Level1_CounterRemind,Level1_i,Level1_BrickSpaceX,Level1_BrickSpaceY,Level1_BCR;
+    int Level1_FadeBricks,Level1_Counter,Level1_CounterRemind,Level1_i,Level1_BrickSpaceX,Level1_BrickSpaceY,Level1_BCR;
 
 //Points
     Menu_BrickPoints.push_back(Vector2f(0,0));
@@ -75,7 +76,7 @@ int main()
     RenderWindow window(VideoMode(800,800),"Assignment3: Brick Breaker");
     window.setFramerateLimit(60);
     b2World World_Menu(b2Vec2(0.0,0.0));
-    b2World World_Level1(b2Vec2(0.0,0.0));
+    b2World World_Level1(b2Vec2(0.0,0.1));
     Paddle *Menu_Paddle,*Level1_Paddle;
     Ball *Menu_Ball,*Level1_Ball;
 
@@ -306,7 +307,8 @@ int main()
         {
             Level1_CountDown=false;
             Level1_CountUp=true;
-            Level1_BottomOnce=false;
+            Level1_AllowCollisions=false;
+            Level1_CreateBricks=true;
 
             Level1_Counter=0;
             Level1_CounterRemind=0;
@@ -314,8 +316,9 @@ int main()
             Level1_BrickSpaceX=0;
             Level1_BrickSpaceY=0;
             Level1_BCR=143;
+            Level1_FadeBricks=0;
 
-            Level1_Clock.resize(4);
+            Level1_Clock.resize(5);
             Level1_Clock[0].restart();
 
             //Creating rectangle shapes
@@ -344,8 +347,9 @@ int main()
             Level1_Once=false;
         }
 
+    if(Level1_Brick.size()==48) Level1_AllowCollisions=true;
     //Level1 brick background gradient
-    if(Level1_Brick.size()==48){
+    if(Level1_AllowCollisions==true){
     for(int i=0; i<=7;i++) physics::setBlockColor(Level1_Brick[i],Level1_BRedC);//red
     for(int i=8; i<=15;i++) physics::setBlockColor(Level1_Brick[i],Level1_BOrangeC);//orange
     for(int i=16; i<=23;i++) physics::setBlockColor(Level1_Brick[i],Level1_BYellowC);//yellow
@@ -392,7 +396,7 @@ int main()
         Level1_Counter++;
         Level1_Clock[0].restart();
     }
-    if(Level1_Counter>Level1_CounterRemind&&Level1_Brick.size()<=47)
+    if(Level1_Counter>Level1_CounterRemind&&Level1_Brick.size()<=47&&Level1_CreateBricks==true)
     {
         Level1_Brick.push_back(physics::createPolygon(World_Level1,26+Level1_BrickSpaceX,25+Level1_BrickSpaceY,Menu_BrickPoints,b2_staticBody));
         physics::setBlockColor(Level1_Brick.back(),Level1_BrickColor);
@@ -401,6 +405,7 @@ int main()
 
         Level1_i++;
         Level1_BrickSpaceX+=95;
+        cout<<"creating bricks: "<<Level1_Brick.size()<<endl;
 
         if(Level1_i==8&&Level1_BrickSpaceY<=240)
         {
@@ -415,8 +420,9 @@ int main()
     {
         Level1_Ball->speed=1;
     }
-    if(Level1_Counter>=47)
+    if(Level1_Counter>47)
     {
+        Level1_CreateBricks=false;
         Level1_Ball->speed=350;
         //moving paddle
         if(Keyboard::isKeyPressed(Keyboard::A)==true) Level1_Paddle->setVelocity(Vector2f(-300,0));
@@ -457,7 +463,7 @@ int main()
         Level1_Ball=new Ball(World_Level1,Level1_Paddle->getPosition().x,Level1_Paddle->getPosition().y-20,25);
         Level1_Ball->setOutlineColor(Color(149,165,166,255));
         Level1_Ball->setOutlineThickness(4);
-        //remove life
+        //remove life?
     }
     //if ball is on the bottom layer for 10s, reset pos
     if(Level1_Ball->getPosition().y>700&&Level1_Clock[2].getElapsedTime().asSeconds()>10)
@@ -470,7 +476,7 @@ int main()
     if(Level1_Ball->getPosition().y<670) Level1_Clock[2].restart();
     //end reset
 
-if(Level1_Brick.size()==48){
+if(Level1_AllowCollisions==true){
     for(int i=0;i<=7;i++){//red bricks collision
         if(Level1_Ball->checkCollision(Level1_Brick[i])==true)
         {
@@ -483,15 +489,61 @@ if(Level1_Brick.size()==48){
             physics::setBlockColor(Level1_Brick[i],Color(rand()%255,rand()%255,rand()%255));
             }
         }
-            //Deleting any dynamic bricks after 0.5s after hitting any brick
-            if(Level1_Clock[3].getElapsedTime().asSeconds()>=0.5&&physics::isDestroyed(Level1_Brick[i])!=true&&Level1_Brick[i]->GetType()==b2_dynamicBody){
-            physics::deleteBlock(World_Level1,Level1_Brick[i]);
-            Level1_Brick.erase(Level1_Brick.begin()+i);
+    }
+    for(int i=8; i<=15;i++){//orange bricks collision
+            if(Level1_Ball->checkCollision(Level1_Brick[i])==true)
+        {
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()!=Level1_BOrangeC){
+            Level1_Brick[i]->SetType(b2_dynamicBody);
+            physics::spin(Level1_Brick[i],17);
+            Level1_Clock[3].restart();
+            }
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()==Level1_BOrangeC){
+            physics::setBlockColor(Level1_Brick[i],Color(rand()%255,rand()%255,rand()%255));
             }
         }
-
-        for(int i=40;i<=47;i++){//purple bricks collision
-        if(Level1_Ball->checkCollision(Level1_Brick[i])==true)
+    }
+    for(int i=16; i<=23;i++){//yellow bricks collision
+            if(Level1_Ball->checkCollision(Level1_Brick[i])==true)
+        {
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()!=Level1_BYellowC){
+            Level1_Brick[i]->SetType(b2_dynamicBody);
+            physics::spin(Level1_Brick[i],17);
+            Level1_Clock[3].restart();
+            }
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()==Level1_BYellowC){
+            physics::setBlockColor(Level1_Brick[i],Color(rand()%255,rand()%255,rand()%255));
+            }
+        }
+    }
+    for(int i=24; i<=31;i++){//green bricks collision
+            if(Level1_Ball->checkCollision(Level1_Brick[i])==true)
+        {
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()!=Level1_BGreenC){
+            Level1_Brick[i]->SetType(b2_dynamicBody);
+            physics::spin(Level1_Brick[i],17);
+            Level1_Clock[3].restart();
+            }
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()==Level1_BGreenC){
+            physics::setBlockColor(Level1_Brick[i],Color(rand()%255,rand()%255,rand()%255));
+            }
+        }
+    }
+    for(int i=32; i<=39;i++){//blue bricks collision
+            if(Level1_Ball->checkCollision(Level1_Brick[i])==true)
+        {
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()!=Level1_BBlueC){
+            Level1_Brick[i]->SetType(b2_dynamicBody);
+            physics::spin(Level1_Brick[i],17);
+            Level1_Clock[3].restart();
+            }
+            if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()==Level1_BBlueC){
+            physics::setBlockColor(Level1_Brick[i],Color(rand()%255,rand()%255,rand()%255));
+            }
+        }
+    }
+    for(int i=40;i<=47;i++){//purple bricks collision
+            if(Level1_Ball->checkCollision(Level1_Brick[i])==true)
         {
             if(static_cast<Shape *>(Level1_Brick[i]->GetUserData())->getFillColor()!=Level1_BPurpleC){
             Level1_Brick[i]->SetType(b2_dynamicBody);
@@ -502,13 +554,47 @@ if(Level1_Brick.size()==48){
             physics::setBlockColor(Level1_Brick[i],Color(rand()%255,rand()%255,rand()%255));
             }
         }
-            //Deleting any dynamic bricks after 0.5s after hitting any brick
-            if(Level1_Clock[3].getElapsedTime().asSeconds()>=0.5&&physics::isDestroyed(Level1_Brick[i])!=true&&Level1_Brick[i]->GetType()==b2_dynamicBody){
-            physics::deleteBlock(World_Level1,Level1_Brick[i]);
-            Level1_Brick.erase(Level1_Brick.begin()+i);
-            }//wokring here nov21
-        }
     }
+
+
+
+
+
+            //Deleting any dynamic bricks after 0.5s after hitting any brick
+            for(int i=0;i<=47;i++){
+            if(Level1_Clock[3].getElapsedTime().asSeconds()>=0.5&&physics::isDestroyed(Level1_Brick[i])!=true&&Level1_Brick[i]->GetType()==b2_dynamicBody){
+
+//            physics::setBlockColor(Level1_Brick[i],Color(0,0,0,0));
+//            physics::setBlockOutline(Level1_Brick[i],Color(0,0,0,0));
+            Level1_Brick[i]->SetGravityScale(200);
+
+//            physics::deleteBlock(World_Level1,Level1_Brick[i]);
+//            Level1_Brick.erase(Level1_Brick.begin()+i);
+//            Level1_Brick.push_back(Level1_Brick[0]+i);
+//            Level1_Brick.back(physics::createBox(World_Level1,1,1,1,1,b2_staticBody));
+            }
+            if(physics::checkCollision(Level1_Brick[i],Level1_Wall[3])==true)
+            {
+                cout<<"DELETE"<<endl;
+//                if(Level1_Clock[4].getElapsedTime().asSeconds()>0.001){
+//                Level1_FadeBricks++;
+//                Level1_Clock[4].restart();
+//                cout<<"hit"<<endl;
+//               }
+//               if(Level1_FadeBricks%5==0)
+//               {
+//
+//               }
+//            if(Level1_FadeBricks==255)
+//               {
+//                   physics::setBlockColor(Level1_Brick[i],Color(0,0,0,0));
+//                   Level1_FadeBricks=0;
+//               }
+//            }
+//            cout<<Level1_FadeBricks<<endl;
+
+        }
+}
 //Menu background gradient
 //    if(Level1_Brick.size()==48){
 //    for(int i=0; i<=7;i++) physics::setBlockColor(Level1_Brick[i],Level1_BRedC);//red
@@ -518,12 +604,15 @@ if(Level1_Brick.size()==48){
 //    for(int i=32; i<=39;i++) physics::setBlockColor(Level1_Brick[i],Level1_BBlueC);//blue
 //    for(int i=40; i<=47;i++) physics::setBlockColor(Level1_Brick[i],Level1_BPurpleC);//purple
 
-
+}
+    }
         Level1_Ball->updatePosition();
         Level1_Paddle->updatePosition();
         for(auto i : Level1_Background) window.draw(i);
         physics::displayWorld(World_Level1,window);
+
     }
+
 
 
 
