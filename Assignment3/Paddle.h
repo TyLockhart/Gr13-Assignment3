@@ -33,13 +33,6 @@ struct Paddle : public RectangleShape { //inheriting all of RectangleShape
     }
 
     //member functions
-    bool checkCollision()
-    {
-        for (b2ContactEdge* edge = res->GetContactList(); edge; edge = edge->next) {
-            if (edge->contact->IsTouching()) return true;
-        }
-        return false;
-    }
 
     bool checkCollision(Block b)
     {

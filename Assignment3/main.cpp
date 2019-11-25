@@ -24,12 +24,12 @@ int main()
 {
     srand(time(0));
 //Declares
-    vector<RectangleShape> Menu_Background,Level1_Background;
+    vector<RectangleShape> Menu_Background,Level1_Background,Bar_Background;
     vector<Vertex> Menu_Vertex;
     vector<Block> Menu_Wall,Menu_Brick,Level1_Brick,Level1_Wall;
     vector<Vector2f> Menu_BrickPoints;
-    vector<Text> Menu_Text;
-    vector<Clock> Menu_Clock,Level1_Clock;
+    vector<Text> Menu_Text,Bar_Text;
+    vector<Clock> Menu_Clock,Level1_Clock,Bar_Clock;
 
     Font Game_Font1;
 
@@ -47,6 +47,8 @@ int main()
     bool OV_Mouse=true;
     bool Menu=true;
     bool Menu_Once=true;
+    bool Bar=false;
+    bool Bar_Once=false;
 
     bool Menu_PaddleRight,Menu_PaddleLeft,Menu_CountDown,Menu_CountUp,Menu_DeleteBlock;
     bool Level1,Level1_Once;
@@ -57,7 +59,7 @@ int main()
 //Int
     int Menu_VxR,Menu_VxG,Menu_VxB,Menu_BrickSpaceX,Menu_BrickSpaceY;
     int Level1_FadeBricks,Level1_Counter,Level1_CounterRemind,Level1_i,Level1_BrickSpaceX,Level1_BrickSpaceY,Level1_BCR;
-
+    int Bar_Score=0;
 //Points
     Menu_BrickPoints.push_back(Vector2f(0,0));
     Menu_BrickPoints.push_back(Vector2f(40,6));
@@ -93,9 +95,9 @@ int main()
 
         window.clear();
 
-//    cout<<Mouse::getPosition(window).x<<": Mouse X-Pos"<<endl;
-//    cout<<Mouse::getPosition(window).y<<": Mouse Y-Pos"<<endl;
-//    cout<<"---"<<endl;
+    cout<<Mouse::getPosition(window).x<<": Mouse X-Pos"<<endl;
+    cout<<Mouse::getPosition(window).y<<": Mouse Y-Pos"<<endl;
+    cout<<"---"<<endl;
 //    if(OV_Mouse==true) cout<<"Clicked Mouse"<<endl;
 
     if(Menu==true)
@@ -107,6 +109,9 @@ int main()
             Menu_CountDown=true;
             Menu_CountUp=false;
             Menu_DeleteBlock=false;
+
+            Bar=false;
+            Bar_Once=false;
 
             Menu_VxR=142;
             Menu_VxG=68;
@@ -310,6 +315,9 @@ int main()
             Level1_AllowCollisions=false;
             Level1_CreateBricks=true;
 
+            Bar=true;
+            Bar_Once=true;
+
             Level1_Counter=0;
             Level1_CounterRemind=0;
             Level1_i=0;
@@ -398,7 +406,7 @@ int main()
     }
     if(Level1_Counter>Level1_CounterRemind&&Level1_Brick.size()<=47&&Level1_CreateBricks==true)
     {
-        Level1_Brick.push_back(physics::createPolygon(World_Level1,26+Level1_BrickSpaceX,25+Level1_BrickSpaceY,Menu_BrickPoints,b2_staticBody));
+        Level1_Brick.push_back(physics::createPolygon(World_Level1,26+Level1_BrickSpaceX,65+Level1_BrickSpaceY,Menu_BrickPoints,b2_staticBody));
         physics::setBlockColor(Level1_Brick.back(),Level1_BrickColor);
         physics::setOutlineThickness(Level1_Brick.back(),3);
         physics::setBlockColor(Level1_Brick.back(),Color(0,0,0,255));
@@ -576,6 +584,30 @@ if(Level1_AllowCollisions==true){
             if(physics::checkCollision(Level1_Brick[i],Level1_Wall[3])==true)
             {
                 cout<<"DELETE"<<endl;
+                Level1_Brick[i]->SetTransform(b2Vec2(-10,-10),Level1_Brick[i]->GetAngle());
+                Level1_Brick[i]->SetType(b2_staticBody);
+                Bar_Score++;
+                Bar_Text[3].setString("+1");
+                Bar_Clock[0].restart();
+                Bar_Text[2].setString("POINTS: "+to_string(Bar_Score));
+                Bar_Text[3].setPosition(Vector2f(Bar_Text[2].getPosition().x+90,23));
+            }
+            if(physics::checkCollision(Level1_Brick[i])==true&&physics::getPosition(Level1_Brick[i]).y<730&&physics::getPosition(Level1_Brick[i]).y>630)
+            {
+                cout<<"hit bar"<<endl;
+                Level1_Brick[i]->SetTransform(b2Vec2(-10,-10),Level1_Brick[i]->GetAngle());
+                Level1_Brick[i]->SetType(b2_staticBody);
+                Bar_Score+=2;
+                Bar_Text[3].setString("+2");
+                Bar_Clock[0].restart();
+                Bar_Text[2].setString("POINTS: "+to_string(Bar_Score));
+                Bar_Text[3].setPosition(Vector2f(Bar_Text[2].getPosition().x+90,23));
+                //working on setting ldistance from +1 to points
+            }
+//                Levels_MaisyChar->SetTransform(b2Vec2(0,14),Levels_MaisyChar->GetAngle());
+//                physics::deleteBlock(World_Level1,Level1_Brick[i]);
+//                Level1_Brick.erase(Level1_Brick.begin()+i);
+//                Level1_Brick.push_back(Level1_Brick[i]+1);
 //                if(Level1_Clock[4].getElapsedTime().asSeconds()>0.001){
 //                Level1_FadeBricks++;
 //                Level1_Clock[4].restart();
@@ -593,7 +625,7 @@ if(Level1_AllowCollisions==true){
 //            }
 //            cout<<Level1_FadeBricks<<endl;
 
-        }
+
 }
 //Menu background gradient
 //    if(Level1_Brick.size()==48){
@@ -612,7 +644,70 @@ if(Level1_AllowCollisions==true){
         physics::displayWorld(World_Level1,window);
 
     }
+    if(Bar==true)
+    {
+        if(Bar_Once==true)
+        {
+            Bar_Clock.resize(1);
 
+           Bar_Background.push_back(RectangleShape(Vector2f(800,50)));
+            Bar_Background.back().setFillColor(Color(0,0,0,180));
+            Bar_Background.back().setPosition(Vector2f(0,0));
+            Bar_Background.back().setOutlineThickness(4);
+            Bar_Background.back().setOutlineColor(Color(255,255,255,255));
+
+        Bar_Text.push_back(Text());
+        Bar_Text.back().setCharacterSize(16);
+        Bar_Text.back().setFont(Game_Font1);
+        Bar_Text.back().setPosition(Vector2f(425,13));
+        Bar_Text.back().setString("BRICK");
+        Bar_Text.back().setFillColor(Color::White);
+        Bar_Text.back().setOutlineColor(Color::Black);
+        Bar_Text.back().setOutlineThickness(2);
+        Bar_Text.back().setOrigin(Vector2f(Bar_Text.back().getCharacterSize()/2+40,Bar_Text.back().getCharacterSize()/2));
+
+        Bar_Text.push_back(Text());
+        Bar_Text.back().setCharacterSize(16);
+        Bar_Text.back().setFont(Game_Font1);
+        Bar_Text.back().setPosition(Vector2f(410,33));
+        Bar_Text.back().setString("BREAKER");
+        Bar_Text.back().setFillColor(Color::White);
+        Bar_Text.back().setOutlineColor(Color::Black);
+        Bar_Text.back().setOutlineThickness(2);
+        Bar_Text.back().setOrigin(Vector2f(Bar_Text.back().getCharacterSize()/2+40,Bar_Text.back().getCharacterSize()/2));
+
+        Bar_Text.push_back(Text());
+        Bar_Text.back().setCharacterSize(16);
+        Bar_Text.back().setFont(Game_Font1);
+        Bar_Text.back().setPosition(Vector2f(10,23));
+        Bar_Text.back().setString("POINTS: "+to_string(Bar_Score));
+        Bar_Text.back().setFillColor(Color::White);
+        Bar_Text.back().setOutlineColor(Color::Black);
+        Bar_Text.back().setOutlineThickness(2);
+
+        Bar_Text.push_back(Text());
+        Bar_Text.back().setCharacterSize(16);
+        Bar_Text.back().setFont(Game_Font1);
+        Bar_Text.back().setPosition(Vector2f(Bar_Text[2].getPosition().x+90,23));
+        Bar_Text.back().setString("+1");
+        Bar_Text.back().setFillColor(Color(46,204,113,255));
+        Bar_Text.back().setOutlineColor(Color::Black);
+        Bar_Text.back().setOutlineThickness(2);
+
+           Bar_Once=false;
+        }
+
+
+
+
+    for(auto i:Bar_Background) window.draw(i);
+    for(int i=0; i<=2;i++) window.draw(Bar_Text[i]);
+    if(Bar_Clock[0].getElapsedTime().asSeconds()<2)
+    {
+        window.draw(Bar_Text[3]);
+    }
+//    for(auto i:Bar_Text) window.draw(i);
+    }
 
 
 
