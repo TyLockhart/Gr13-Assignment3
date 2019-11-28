@@ -10,8 +10,11 @@
 //!!Work on colouring shapes by changing like gradient and add paddle/ball
 //!!work on creating/moving paddle!! ball point systems
 //!!work on destrouying bricks
-//game over screen, !!time alive, !!poitns gained, !!restart button, !!menu button NEW total score, total time?
-//fades
+//!!game over screen, !!time alive, !!poitns gained, !!restart button, !!menu button NEW total score, total time?
+//!!fades
+//work on clicking game over and menu circle aniamting
+
+//overall .clears and deleteblocks in onces
 
 #include "physics.h"
 #include <vector>
@@ -33,6 +36,7 @@ int main()
     vector<Vector2f> Menu_BrickPoints,Level1_BrickPoints;
     vector<Text> Menu_Text,Bar_Text,Lost_Text;
     vector<Clock> Menu_Clock,Level1_Clock,Bar_Clock,Lost_Clock;
+    vector<bool> Lost_Fades;
 
     Font Game_Font1;
 
@@ -90,8 +94,6 @@ int main()
     Game_Font1.loadFromFile("Game_Font1.ttf");
 
 
-
-
     RenderWindow window(VideoMode(800,800),"Assignment3: Brick Breaker");
     window.setFramerateLimit(60);
     b2World World_Menu(b2Vec2(0.0,0.0));
@@ -113,9 +115,9 @@ int main()
 
         window.clear();
 
-//    cout<<Mouse::getPosition(window).x<<": Mouse X-Pos"<<endl;
-//    cout<<Mouse::getPosition(window).y<<": Mouse Y-Pos"<<endl;
-//    cout<<"---"<<endl;
+    cout<<Mouse::getPosition(window).x<<": Mouse X-Pos"<<endl;
+    cout<<Mouse::getPosition(window).y<<": Mouse Y-Pos"<<endl;
+    cout<<"---"<<endl;
 //    if(OV_Mouse==true) cout<<"Clicked Mouse"<<endl;
 
         if(Menu==true)
@@ -759,13 +761,18 @@ int main()
         {
             if(Lost_Once==true)
             {
-                Lost_Clock.resize(1);
+                Lost_Clock.resize(2);
+                Lost_Fades.resize(20);
                 Lost_CountDown=true;
                 Lost_CountUp=false;
 
                 Lost_VxR=231;
                 Lost_VxG=76;
                 Lost_VxB=60;
+
+                Lost_Clock[1].restart();
+
+                Lost_Fades[0]=true;
 
                 Lost_Background.clear();
                 Lost_Text.clear();
@@ -777,63 +784,70 @@ int main()
                 Lost_Background.back().setOutlineColor(Color(161,53,42,255));
 
                 Lost_Background.push_back(RectangleShape(Vector2f(260,150)));
-                Lost_Background.back().setFillColor(Color(149,165,166,100));
+                Lost_Background.back().setFillColor(Color(149,165,166,0));//opacity 100
                 Lost_Background.back().setPosition(Vector2f(110,450));
                 Lost_Background.back().setOutlineThickness(4);
-                Lost_Background.back().setOutlineColor(Color(255,255,255,100));
+                Lost_Background.back().setOutlineColor(Color(255,255,255,0));
 
                 Lost_Background.push_back(RectangleShape(Vector2f(260,150)));
-                Lost_Background.back().setFillColor(Color(149,165,166,100));
+                Lost_Background.back().setFillColor(Color(149,165,166,0));//opacity 100
                 Lost_Background.back().setPosition(Vector2f(410,450));
                 Lost_Background.back().setOutlineThickness(4);
-                Lost_Background.back().setOutlineColor(Color(255,255,255,100));
+                Lost_Background.back().setOutlineColor(Color(255,255,255,0));
 
                 Lost_Text.push_back(Text("YOU LOST! D=",Game_Font1,110));
                 Lost_Text.back().setPosition(Vector2f(30,650));
-                Lost_Text.back().setFillColor(Color::White);
-                Lost_Text.back().setOutlineColor(Color::Black);
+                Lost_Text.back().setFillColor(Color(255,255,255,0));
+                Lost_Text.back().setOutlineColor(Color(0,0,0,0));
                 Lost_Text.back().setOutlineThickness(2);
 
                 Lost_Text.push_back(Text("You got to Level: "+to_string(Game_CurrentLevel),Game_Font1,65));
                 Lost_Text.back().setPosition(Vector2f(100,600));
-                Lost_Text.back().setFillColor(Color::White);
-                Lost_Text.back().setOutlineColor(Color::Black);
+                Lost_Text.back().setFillColor(Color(255,255,255,0));
+                Lost_Text.back().setOutlineColor(Color(0,0,0,0));
                 Lost_Text.back().setOutlineThickness(2);
 
                 Lost_Text.push_back(Text("TIME ALIVE: \n"+to_string(Level1_Clock[5].getElapsedTime().asSeconds()),Game_Font1,50));//lv1 time alive
                 Lost_Text.back().setPosition(Vector2f(40,40));
-                Lost_Text.back().setFillColor(Color::White);
-                Lost_Text.back().setOutlineColor(Color::Black);
+                Lost_Text.back().setFillColor(Color(255,255,255,0));
+                Lost_Text.back().setOutlineColor(Color(0,0,0,0));
                 Lost_Text.back().setOutlineThickness(2);
+
+//                Lost_Text.push_back(Text("TOTAL TIME: \n"+to_string(Lost_Clock[1].getElapsedTime().asSeconds()),Game_Font1,50));//lv1 time alive
+//                Lost_Text.back().setPosition(Vector2f(40,200));
+//                Lost_Text.back().setFillColor(Color::White);
+//                Lost_Text.back().setOutlineColor(Color::Black);
+//                Lost_Text.back().setOutlineThickness(2);
 
                 Lost_Text.push_back(Text("POINTS: \n"+to_string(Bar_Score),Game_Font1,50));
                 Lost_Text.back().setPosition(Vector2f(400,40));
-                Lost_Text.back().setFillColor(Color::White);
-                Lost_Text.back().setOutlineColor(Color::Black);
+                Lost_Text.back().setFillColor(Color(255,255,255,0));
+                Lost_Text.back().setOutlineColor(Color(0,0,0,0));
                 Lost_Text.back().setOutlineThickness(2);
 
                 Lost_Text.push_back(Text("TOTAL SCORE: \n"+to_string(Game_TotalScore),Game_Font1,50));
                 Lost_Text.back().setPosition(Vector2f(400,200));
-                Lost_Text.back().setFillColor(Color::White);
-                Lost_Text.back().setOutlineColor(Color::Black);
+                Lost_Text.back().setFillColor(Color(255,255,255,0));
+                Lost_Text.back().setOutlineColor(Color(0,0,0,0));
                 Lost_Text.back().setOutlineThickness(2);
 
                 Lost_Text.push_back(Text("MENU",Game_Font1,50));
                 Lost_Text.back().setOrigin(Vector2f(Lost_Text.back().getLocalBounds().width/2,Lost_Text.back().getLocalBounds().height/2));
                 Lost_Text.back().setPosition(Vector2f(Lost_Background[1].getPosition().x+(Lost_Background[1].getSize().x/2),Lost_Background[1].getPosition().y+(Lost_Background[1].getSize().y/2)-10));
-                Lost_Text.back().setFillColor(Color::White);
-                Lost_Text.back().setOutlineColor(Color::Black);
+                Lost_Text.back().setFillColor(Color(255,255,255,0));
+                Lost_Text.back().setOutlineColor(Color(0,0,0,0));
                 Lost_Text.back().setOutlineThickness(2);
 
                 Lost_Text.push_back(Text("RESTART",Game_Font1,50));
                 Lost_Text.back().setOrigin(Vector2f(Lost_Text.back().getLocalBounds().width/2,Lost_Text.back().getLocalBounds().height/2));
                 Lost_Text.back().setPosition(Vector2f(Lost_Background[2].getPosition().x+(Lost_Background[2].getSize().x/2),Lost_Background[2].getPosition().y+(Lost_Background[2].getSize().y/2)-10));
-                Lost_Text.back().setFillColor(Color::White);
-                Lost_Text.back().setOutlineColor(Color::Black);
+                Lost_Text.back().setFillColor(Color(255,255,255,0));
+                Lost_Text.back().setOutlineColor(Color(0,0,0,0));
                 Lost_Text.back().setOutlineThickness(2);
 
                 Lost_Once=false;
             }
+            //{
             //Menu background gradient
             Lost_Vertex.clear();
             Lost_Vertex.push_back(Vertex(Vector2f(0,0),Color(Lost_VxR,Lost_VxG,Lost_VxB)));
@@ -866,15 +880,144 @@ int main()
                 Lost_CountUp=false;
                 Lost_CountDown=true;
             }
-            //End gradient
+            //End gradient//}
+
+            if(Lost_Fades[0]==true&&Lost_Clock[1].getElapsedTime().asSeconds()>0.05&&Lost_Text[0].getColor().a<255)
+            {
+                Lost_Text[0].setFillColor(Lost_Text[0].getFillColor() + Color(0,0,0,15));
+                Lost_Text[0].setOutlineColor(Lost_Text[0].getOutlineColor() + Color(0,0,0,15));
+                Lost_Clock[1].restart();
+            }
+            else if(Lost_Text[0].getColor().a==255)
+            {
+                Lost_Fades[0]=false;
+                Lost_Fades[1]=true;
+            }//fade in you lost
+
+            if(Lost_Fades[1]==true&&Lost_Clock[1].getElapsedTime().asSeconds()>0.05&&Lost_Text[1].getColor().a<255)
+            {
+                Lost_Text[1].setFillColor(Lost_Text[1].getFillColor() + Color(0,0,0,15));
+                Lost_Text[1].setOutlineColor(Lost_Text[1].getOutlineColor() + Color(0,0,0,15));
+                Lost_Clock[1].restart();
+            }
+            else if(Lost_Text[0].getColor().a==255)
+            {
+                Lost_Fades[1]=false;
+                Lost_Fades[2]=true;
+            }//fade in level got to
+
+            if(Lost_Fades[2]==true&&Lost_Clock[1].getElapsedTime().asSeconds()>0.05&&Lost_Text[2].getColor().a<255)
+            {
+                Lost_Text[2].setFillColor(Lost_Text[2].getFillColor() + Color(0,0,0,15));
+                Lost_Text[2].setOutlineColor(Lost_Text[2].getOutlineColor() + Color(0,0,0,15));
+                Lost_Clock[1].restart();
+            }
+            else if(Lost_Text[2].getColor().a==255)
+            {
+                Lost_Fades[2]=false;
+                Lost_Fades[3]=true;
+            }//fade in time
+
+            if(Lost_Fades[3]==true&&Lost_Clock[1].getElapsedTime().asSeconds()>0.05&&Lost_Text[3].getColor().a<255)
+            {
+                Lost_Text[3].setFillColor(Lost_Text[3].getFillColor() + Color(0,0,0,15));
+                Lost_Text[3].setOutlineColor(Lost_Text[3].getOutlineColor() + Color(0,0,0,15));
+                Lost_Clock[1].restart();
+            }
+            else if(Lost_Text[3].getColor().a==255)
+            {
+                Lost_Fades[3]=false;
+                Lost_Fades[4]=true;
+            }//fade points
+
+            if(Lost_Fades[4]==true&&Lost_Clock[1].getElapsedTime().asSeconds()>0.05&&Lost_Text[4].getColor().a<255)
+            {
+                Lost_Text[4].setFillColor(Lost_Text[4].getFillColor() + Color(0,0,0,15));
+                Lost_Text[4].setOutlineColor(Lost_Text[4].getOutlineColor() + Color(0,0,0,15));
+                Lost_Clock[1].restart();
+            }
+            else if(Lost_Text[4].getColor().a==255)
+            {
+                Lost_Fades[4]=false;
+                Lost_Fades[5]=true;
+            }//fade total score
+
+            if(Lost_Fades[5]==true&&Lost_Clock[1].getElapsedTime().asSeconds()>0.05&&Lost_Background[1].getFillColor().a<100)
+            {
+                Lost_Background[1].setFillColor(Lost_Background[1].getFillColor() + Color(0,0,0,10));
+                Lost_Background[1].setOutlineColor(Lost_Background[1].getOutlineColor() + Color(0,0,0,10));
+                Lost_Clock[1].restart();
+            }
+            else if(Lost_Background[1].getFillColor().a==100)
+            {
+                Lost_Fades[5]=false;
+                Lost_Fades[6]=true;
+            }//fade menu box
+
+            if(Lost_Fades[6]==true&&Lost_Clock[1].getElapsedTime().asSeconds()>0.05&&Lost_Text[5].getColor().a<255)
+            {
+                Lost_Text[5].setFillColor(Lost_Text[5].getFillColor() + Color(0,0,0,15));
+                Lost_Text[5].setOutlineColor(Lost_Text[5].getOutlineColor() + Color(0,0,0,15));
+                Lost_Clock[1].restart();
+            }
+            else if(Lost_Text[5].getColor().a==255)
+            {
+                Lost_Fades[6]=false;
+                Lost_Fades[7]=true;
+            }//fade menu text
+
+            if(Lost_Fades[7]==true&&Lost_Clock[1].getElapsedTime().asSeconds()>0.05&&Lost_Background[2].getFillColor().a<100)
+            {
+                Lost_Background[2].setFillColor(Lost_Background[2].getFillColor() + Color(0,0,0,10));
+                Lost_Background[2].setOutlineColor(Lost_Background[2].getOutlineColor() + Color(0,0,0,10));
+                Lost_Clock[1].restart();
+            }
+            else if(Lost_Background[2].getFillColor().a==100)
+            {
+                Lost_Fades[7]=false;
+                Lost_Fades[8]=true;
+            }//fade restart box
+
+            if(Lost_Fades[8]==true&&Lost_Clock[1].getElapsedTime().asSeconds()>0.05&&Lost_Text[6].getColor().a<255)
+            {
+                Lost_Text[6].setFillColor(Lost_Text[6].getFillColor() + Color(0,0,0,15));
+                Lost_Text[6].setOutlineColor(Lost_Text[6].getOutlineColor() + Color(0,0,0,15));
+                Lost_Clock[1].restart();
+            }
+            else if(Lost_Text[6].getColor().a==255)
+            {
+                Lost_Fades[8]=false;
+                Lost_Fades[9]=true;
+            }//fade restart text
+
+            if(Lost_Fades[9]==true){
+            if(Mouse::getPosition(window).x>106&&Mouse::getPosition(window).y>446&&Mouse::getPosition(window).x<373&&Mouse::getPosition(window).y<603)
+            {
+                //on menu box
+                Lost_Text[5].setCharacterSize(60);
+                Lost_Text[5].setFillColor(Color(243,156,18,255));
+                Lost_Text[5].move(Vector2f(Lost_Text[5].getLocalBounds().width/2*sin(Lost_Text[5].getPosition().x-Lost_Text[5].getLocalBounds().width/2),Lost_Text[5].getLocalBounds().height/2*cos(Lost_Text[5].getPosition().y-Lost_Text[5].getLocalBounds().width/2)));
+            }
+            else{
+                Lost_Text[5].setCharacterSize(50);
+                Lost_Text[5].setFillColor(Color(255,255,255,255));
+//                Lost_Text[5].setPosition(Vector2f(Lost_Text[5].getPosition().x+10,Lost_Text[5].getPosition().y+10));
+            }
+
+            if(Mouse::getPosition(window).x>406&&Mouse::getPosition(window).y>446&&Mouse::getPosition(window).x<673&&Mouse::getPosition(window).y<603)
+            {
+                //on restart box
+
+            }
+            }
+
 
             window.draw(&Lost_Vertex[0],Lost_Vertex.size(),TrianglesFan);//Background gradient
-            for(auto i:Lost_Background)
-                window.draw(i);
-            for(auto i:Lost_Text)
-                window.draw(i);
+            for(auto i:Lost_Background) window.draw(i);
+            for(auto i:Lost_Text) window.draw(i);
 
         }
+
         window.display();
     }
 
