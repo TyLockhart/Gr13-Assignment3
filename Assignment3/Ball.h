@@ -91,6 +91,12 @@ struct Ball : public CircleShape {
         res->SetUserData(0);
     }
 
+    bool isDestroyed(bool) {//fix this
+        if(res->GetUserData()>0) return true;
+
+//        if (b->GetUserData() == 0) return true;
+        else return false;
+    }
 
     //member variable
     b2Body* res;

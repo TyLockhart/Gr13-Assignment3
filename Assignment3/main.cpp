@@ -13,6 +13,7 @@
 //!!game over screen, !!time alive, !!poitns gained, !!restart button, !!menu button NEW total score, total time?
 //!!fades
 //work on clicking game over and menu circle aniamting
+//work on checking if ball is destroyed and makign new one for level 1 ball.h
 
 //overall .clears and deleteblocks in onces
 
@@ -54,14 +55,14 @@ int main()
     bool OV_Mouse=true;
     bool Menu=true;
     bool Menu_Once=true;
-
     bool Bar,Bar_Once;
     bool Lost,Lost_Once;
+
     bool Menu_PaddleRight,Menu_PaddleLeft,Menu_CountDown,Menu_CountUp,Menu_DeleteBlock;
+
     bool Level1,Level1_Once,Level1_CountDown,Level1_CountUp,Level1_AllowCollisions,Level1_CreateBricks;
 
-    bool Lost_CountDown;
-    bool Lost_CountUp;
+    bool Lost_CountDown,Lost_CountUp;
 
 //Ints
     int Menu_VxR,Menu_VxG,Menu_VxB,Menu_BrickSpaceX,Menu_BrickSpaceY;
@@ -341,7 +342,7 @@ int main()
                 Bar=true;
                 Bar_Once=true;
                 Bar_Score=0;
-                Bar_Lives=0;//set to 5
+                Bar_Lives=5;//set to 5
 
                 Level1_Counter=0;
                 Level1_CounterRemind=0;
@@ -354,6 +355,31 @@ int main()
                 Level1_Clock.resize(6);
                 Level1_Clock[0].restart();
                 Level1_Clock[5].restart();
+
+                for(int i=0; i<Level1_Wall.size(); i++)
+                {
+                    if(physics::isDestroyed(Level1_Wall[i])!=true)
+                    {
+                        physics::deleteBlock(World_Level1,Level1_Wall[i]);
+                        Level1_Wall.clear();
+                    }
+                }
+                for(int i=0; i<Level1_Brick.size(); i++)
+                {
+                    if(physics::isDestroyed(Level1_Brick[i])!=true)
+                    {
+                        physics::deleteBlock(World_Level1,Level1_Brick[i]);
+                        Level1_Brick.clear();
+                    }
+                }
+
+//                Level1_Paddle->removeBody();
+//                if(physics::isDestroyed(Level1_Paddle)!=true) Level1_Paddle->removeBody();
+//                if(physics::isDestroyed(Level1_Ball)!=true) Level1_Ball->removeBody();
+                if(Ball::isDestroyed(false))
+                {
+                    Level1_Ball->removeBody();
+                }
 
                 //Creating rectangle shapes
                 Level1_Background.push_back(RectangleShape(Vector2f(800,800)));
@@ -771,9 +797,11 @@ int main()
                 Lost_VxB=60;
 
                 Lost_Clock[1].restart();
+                for(int i=1;i<=9;i++) Lost_Fades[i]=false;
 
                 Lost_Fades[0]=true;
 
+                Lost_Vertex.clear();
                 Lost_Background.clear();
                 Lost_Text.clear();
 
@@ -847,7 +875,7 @@ int main()
 
                 Lost_Once=false;
             }
-            //{
+
             //Menu background gradient
             Lost_Vertex.clear();
             Lost_Vertex.push_back(Vertex(Vector2f(0,0),Color(Lost_VxR,Lost_VxG,Lost_VxB)));
@@ -880,7 +908,7 @@ int main()
                 Lost_CountUp=false;
                 Lost_CountDown=true;
             }
-            //End gradient//}
+            //End gradient//
 
             if(Lost_Fades[0]==true&&Lost_Clock[1].getElapsedTime().asSeconds()>0.05&&Lost_Text[0].getColor().a<255)
             {
@@ -996,18 +1024,37 @@ int main()
                 //on menu box
                 Lost_Text[5].setCharacterSize(60);
                 Lost_Text[5].setFillColor(Color(243,156,18,255));
-                Lost_Text[5].move(Vector2f(Lost_Text[5].getLocalBounds().width/2*sin(Lost_Text[5].getPosition().x-Lost_Text[5].getLocalBounds().width/2),Lost_Text[5].getLocalBounds().height/2*cos(Lost_Text[5].getPosition().y-Lost_Text[5].getLocalBounds().width/2)));
+                Lost_Text[5].setPosition(Vector2f(Lost_Background[1].getPosition().x+(Lost_Background[1].getSize().x/2)-15,Lost_Background[1].getPosition().y+(Lost_Background[1].getSize().y/2)-15));
+                if(OV_Mouse==true)
+                {
+                    Menu=true;
+                    Menu_Once=true;
+                    Lost=false;
+                }
             }
             else{
                 Lost_Text[5].setCharacterSize(50);
                 Lost_Text[5].setFillColor(Color(255,255,255,255));
-//                Lost_Text[5].setPosition(Vector2f(Lost_Text[5].getPosition().x+10,Lost_Text[5].getPosition().y+10));
+                Lost_Text[5].setPosition(Vector2f(Lost_Background[1].getPosition().x+(Lost_Background[1].getSize().x/2),Lost_Background[1].getPosition().y+(Lost_Background[1].getSize().y/2)-10));
             }
 
             if(Mouse::getPosition(window).x>406&&Mouse::getPosition(window).y>446&&Mouse::getPosition(window).x<673&&Mouse::getPosition(window).y<603)
             {
                 //on restart box
-
+                Lost_Text[6].setCharacterSize(60);
+                Lost_Text[6].setFillColor(Color(243,156,18,255));
+                Lost_Text[6].setPosition(Vector2f(Lost_Background[2].getPosition().x+(Lost_Background[2].getSize().x/2)-15,Lost_Background[2].getPosition().y+(Lost_Background[2].getSize().y/2)-15));
+                if(OV_Mouse==true)
+                {
+                    Level1=true;
+                    Level1_Once=true;
+                    Lost=false;
+                }
+            }
+            else{
+                Lost_Text[6].setCharacterSize(50);
+                Lost_Text[6].setFillColor(Color(255,255,255,255));
+                Lost_Text[6].setPosition(Vector2f(Lost_Background[2].getPosition().x+(Lost_Background[2].getSize().x/2),Lost_Background[2].getPosition().y+(Lost_Background[2].getSize().y/2)-10));
             }
             }
 
