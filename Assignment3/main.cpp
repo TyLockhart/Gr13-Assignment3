@@ -14,6 +14,7 @@
 //!!fades
 //work on clicking game over and menu circle aniamting
 //work on checking if ball is destroyed and makign new one for level 1 ball.h
+//total score end screen
 
 //overall .clears and deleteblocks in onces
 
@@ -55,23 +56,17 @@ int main()
     bool OV_Mouse=true;
     bool Menu=true;
     bool Menu_Once=true;
-    bool Bar,Bar_Once;
-    bool Lost,Lost_Once;
 
     bool Menu_PaddleRight,Menu_PaddleLeft,Menu_CountDown,Menu_CountUp,Menu_DeleteBlock;
-
     bool Level1,Level1_Once,Level1_CountDown,Level1_CountUp,Level1_AllowCollisions,Level1_CreateBricks;
-
-    bool Lost_CountDown,Lost_CountUp;
+    bool Lost,Lost_Once,Lost_CountDown,Lost_CountUp;
+    bool Bar,Bar_Once;
 
 //Ints
     int Menu_VxR,Menu_VxG,Menu_VxB,Menu_BrickSpaceX,Menu_BrickSpaceY;
     int Level1_FadeBricks,Level1_Counter,Level1_CounterRemind,Level1_i,Level1_BrickSpaceX,Level1_BrickSpaceY,Level1_BCR;
-
     int Bar_Score,Bar_Lives;
-
     int Lost_VxR,Lost_VxG,Lost_VxB;
-
     int Game_TotalScore,Game_CurrentLevel;
 
 //Points
@@ -116,9 +111,9 @@ int main()
 
         window.clear();
 
-    cout<<Mouse::getPosition(window).x<<": Mouse X-Pos"<<endl;
-    cout<<Mouse::getPosition(window).y<<": Mouse Y-Pos"<<endl;
-    cout<<"---"<<endl;
+//    cout<<Mouse::getPosition(window).x<<": Mouse X-Pos"<<endl;
+//    cout<<Mouse::getPosition(window).y<<": Mouse Y-Pos"<<endl;
+//    cout<<"---"<<endl;
 //    if(OV_Mouse==true) cout<<"Clicked Mouse"<<endl;
 
         if(Menu==true)
@@ -133,6 +128,8 @@ int main()
 
                 Bar=false;
                 Bar_Once=false;
+                Lost=false;
+                Lost_Once=false;
 
                 Menu_VxR=142;
                 Menu_VxG=68;
@@ -261,9 +258,6 @@ int main()
             }
             //End gradient
 
-
-
-
             for(int i=0; i<Menu_Brick.size(); i++)
             {
                 if(Menu_Ball->checkCollision(Menu_Brick[i])==true)
@@ -342,7 +336,7 @@ int main()
                 Bar=true;
                 Bar_Once=true;
                 Bar_Score=0;
-                Bar_Lives=5;//set to 5
+                Bar_Lives=1;//set to 5
 
                 Level1_Counter=0;
                 Level1_CounterRemind=0;
@@ -366,20 +360,32 @@ int main()
                 }
                 for(int i=0; i<Level1_Brick.size(); i++)
                 {
-                    if(physics::isDestroyed(Level1_Brick[i])!=true)
-                    {
-                        physics::deleteBlock(World_Level1,Level1_Brick[i]);
-                        Level1_Brick.clear();
-                    }
-                }
+                    World_Level1.DestroyBody(Level1_Brick[i]);
 
-//                Level1_Paddle->removeBody();
-//                if(physics::isDestroyed(Level1_Paddle)!=true) Level1_Paddle->removeBody();
-//                if(physics::isDestroyed(Level1_Ball)!=true) Level1_Ball->removeBody();
-                if(Ball::isDestroyed(false))
-                {
-                    Level1_Ball->removeBody();
+//                    if(physics::isDestroyed(Level1_Brick[i])!=true)
+//                    {
+//                        physics::deleteBlock(World_Level1,Level1_Brick[i]);
+//                        Level1_Brick.erase(Level1_Brick.begin()+i);
+//                        cout<<Level1_Brick.size()<<endl;
+////                        Level1_Brick.clear();
+//                    }
+                   // World_Level1.
                 }
+                Level1_Brick.clear();
+
+
+
+
+                    if(Level1_Ball!=0)
+                    {
+                        cout<<"delete ball"<<endl;
+                        Level1_Ball->removeBody();
+                    }
+                    if(Level1_Paddle->res!=0)
+                    {
+                        cout<<"delete paddle"<<endl;
+                        Level1_Paddle->removeBody();
+                    }
 
                 //Creating rectangle shapes
                 Level1_Background.push_back(RectangleShape(Vector2f(800,800)));
@@ -768,14 +774,14 @@ int main()
                 Lost_Once=true;
             }
 
-            cout<<Bar_Clock[0].getElapsedTime().asSeconds()<<endl;
+//            cout<<Bar_Clock[0].getElapsedTime().asSeconds()<<endl;
             for(auto i:Bar_Background)
                 window.draw(i);
             for(int i=0; i<=3; i++)
                 window.draw(Bar_Text[i]);
             if(Bar_Clock[0].getElapsedTime().asSeconds()<2)
             {
-                cout<<"drawing +1/+2"<<endl;
+//                cout<<"drawing +1/+2"<<endl;
                 window.draw(Bar_Text[4]);
             }
             if(Bar_Clock[1].getElapsedTime().asSeconds()<2)
