@@ -914,7 +914,7 @@ int main()
                 Lost_CountUp=false;
                 Lost_CountDown=true;
             }
-            //End gradient//
+            //End gradient
 
             if(Lost_Fades[0]==true&&Lost_Clock[1].getElapsedTime().asSeconds()>0.05&&Lost_Text[0].getColor().a<255)
             {
@@ -934,7 +934,7 @@ int main()
                 Lost_Text[1].setOutlineColor(Lost_Text[1].getOutlineColor() + Color(0,0,0,15));
                 Lost_Clock[1].restart();
             }
-            else if(Lost_Text[0].getColor().a==255)
+            else if(Lost_Text[1].getColor().a==255)
             {
                 Lost_Fades[1]=false;
                 Lost_Fades[2]=true;
