@@ -12,9 +12,10 @@
 //!!work on destrouying bricks
 //!!game over screen, !!time alive, !!poitns gained, !!restart button, !!menu button NEW total score, total time?
 //!!fades
-//work on clicking game over and menu circle aniamting
+//!- work on clicking game over and menu circle aniamting
 //work on checking if ball is destroyed and makign new one for level 1 ball.h
 //total score end screen
+//FIRGURE OUT SAFETY NET FOR BALL/PADDLE DELETING
 
 //overall .clears and deleteblocks in onces
 
@@ -105,16 +106,17 @@ int main()
         {
             if(event.type == Event::Closed)
                 window.close();
-        }
+
         if(event.type==Event::MouseButtonReleased&&event.mouseButton.button==Mouse::Left)
             OV_Mouse=true;
-
+        }
         window.clear();
 
 //    cout<<Mouse::getPosition(window).x<<": Mouse X-Pos"<<endl;
 //    cout<<Mouse::getPosition(window).y<<": Mouse Y-Pos"<<endl;
 //    cout<<"---"<<endl;
 //    if(OV_Mouse==true) cout<<"Clicked Mouse"<<endl;
+//    cout<<OV_Mouse<<endl;
 
         if(Menu==true)
         {
@@ -138,6 +140,7 @@ int main()
                 Menu_BrickSpaceY=0;
 
                 Game_TotalScore=0;
+                Bar_Score=0;
 
                 Menu_Clock.resize(2);
 
@@ -160,10 +163,26 @@ int main()
                 Menu_Background.clear();
                 Menu_Text.clear();
 
+                if(Menu_Ball!=0)
+                    {
+                        cout<<"delete ball"<<endl;
+//                        Menu_Ball->removeBody();
+                    }
+//                    if(Menu_Paddle->res>0)
+//                    {
+//                        cout<<"delete paddle"<<endl;
+////                        Menu_Paddle->removeBody();
+//                    }
+
+
+//                if(Menu_Paddle->res!=NULL) Menu_Paddle->removeBody();
 
                 Menu_Paddle=new Paddle(World_Menu,400,700,150,25);
                 Menu_Paddle->setOutlineColor(Color(149,165,166,255));
                 Menu_Paddle->setOutlineThickness(4);
+
+//                if(Menu_Ball!=NULL) Menu_Ball->removeBody();
+
                 Menu_Ball=new Ball(World_Menu,400,500,25);
                 Menu_Ball->setOutlineColor(Color(149,165,166,255));
                 Menu_Ball->setOutlineThickness(4);
@@ -372,9 +391,6 @@ int main()
                    // World_Level1.
                 }
                 Level1_Brick.clear();
-
-
-
 
                     if(Level1_Ball!=0)
                     {
@@ -801,6 +817,9 @@ int main()
                 Lost_VxR=231;
                 Lost_VxG=76;
                 Lost_VxB=60;
+                cout<<"Lost true"<<endl;
+
+                Game_TotalScore=5;
 
                 Lost_Clock[1].restart();
                 for(int i=1;i<=9;i++) Lost_Fades[i]=false;
