@@ -91,10 +91,9 @@ struct Ball : public CircleShape {
         res->SetUserData(0);
     }
 
-    bool isDestroyed() {//fix this
-        if(res->GetUserData()>0) return true;
+    bool isDestroyed() {
+        if(res != NULL) return false;
 
-//        if (b->GetUserData() == 0) return true;
         else return false;
     }
 

@@ -62,6 +62,13 @@ struct Paddle : public RectangleShape { //inheriting all of RectangleShape
         res->SetUserData(0);
     }
 
+    bool isDestroyed() {//fix this
+        if(res->GetUserData()!=NULL) return false;
+
+//        if (b->GetUserData() == 0) return true;
+        else return false;
+    }
+
     //member variable
     b2Body* res;
 

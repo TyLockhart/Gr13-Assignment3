@@ -13,11 +13,13 @@
 //!!game over screen, !!time alive, !!poitns gained, !!restart button, !!menu button NEW total score, total time?
 //!!fades
 //!- work on clicking game over and menu circle aniamting
-//work on checking if ball is destroyed and makign new one for level 1 ball.h
+//!!!work on checking if ball is destroyed and makign new one for level 1 ball.h
 //total score end screen
-//FIRGURE OUT SAFETY NET FOR BALL/PADDLE DELETING
+//!!!FIRGURE OUT SAFETY NET FOR BALL/PADDLE DELETING
+//reset lvl1 score
 
-//overall .clears and deleteblocks in onces
+
+//overall .clears and deleteblocks in onces//new METHODS
 
 #include "physics.h"
 #include <vector>
@@ -90,13 +92,13 @@ int main()
 //Font
     Game_Font1.loadFromFile("Game_Font1.ttf");
 
-
     RenderWindow window(VideoMode(800,800),"Assignment3: Brick Breaker");
     window.setFramerateLimit(60);
     b2World World_Menu(b2Vec2(0.0,0.0));
     b2World World_Level1(b2Vec2(0.0,0.1));
-    Paddle *Menu_Paddle,*Level1_Paddle;
-    Ball *Menu_Ball,*Level1_Ball;
+    Paddle *Menu_Paddle = NULL,*Level1_Paddle = NULL;
+    Ball *Menu_Ball = NULL,*Level1_Ball = NULL;
+
 
     while(window.isOpen()&& !Keyboard::isKeyPressed(Keyboard::Escape))
     {
@@ -146,42 +148,39 @@ int main()
 
                 for(int i=0; i<Menu_Wall.size(); i++)
                 {
-                    if(physics::isDestroyed(Menu_Wall[i])!=true)
-                    {
-                        physics::deleteBlock(World_Menu,Menu_Wall[i]);
-                        Menu_Wall.clear();
-                    }
+                    World_Menu.DestroyBody(Menu_Wall[i]);
                 }
+                Menu_Wall.clear();
+
                 for(int i=0; i<Menu_Brick.size(); i++)
                 {
-                    if(physics::isDestroyed(Menu_Brick[i])!=true)
-                    {
-                        physics::deleteBlock(World_Menu,Menu_Brick[i]);
-                        Menu_Brick.clear();
-                    }
+                    World_Menu.DestroyBody(Menu_Brick[i]);
                 }
+                Menu_Brick.clear();
+
                 Menu_Background.clear();
                 Menu_Text.clear();
 
-                if(Menu_Ball!=0)
+                if(Menu_Ball != NULL)
                     {
-                        cout<<"delete ball"<<endl;
-//                        Menu_Ball->removeBody();
+                        Menu_Ball->removeBody();
                     }
-//                    if(Menu_Paddle->res>0)
+                    if(Menu_Paddle != NULL)
+                    {
+                        Menu_Paddle->removeBody();
+                    }
+
+//                if(Menu_Paddle->isDestroyed()==false)
 //                    {
 //                        cout<<"delete paddle"<<endl;
-////                        Menu_Paddle->removeBody();
+//                        Menu_Paddle->removeBody();
 //                    }
 
 
-//                if(Menu_Paddle->res!=NULL) Menu_Paddle->removeBody();
 
                 Menu_Paddle=new Paddle(World_Menu,400,700,150,25);
                 Menu_Paddle->setOutlineColor(Color(149,165,166,255));
                 Menu_Paddle->setOutlineThickness(4);
-
-//                if(Menu_Ball!=NULL) Menu_Ball->removeBody();
 
                 Menu_Ball=new Ball(World_Menu,400,500,25);
                 Menu_Ball->setOutlineColor(Color(149,165,166,255));
@@ -371,35 +370,22 @@ int main()
 
                 for(int i=0; i<Level1_Wall.size(); i++)
                 {
-                    if(physics::isDestroyed(Level1_Wall[i])!=true)
-                    {
-                        physics::deleteBlock(World_Level1,Level1_Wall[i]);
-                        Level1_Wall.clear();
-                    }
+                    World_Level1.DestroyBody(Level1_Wall[i]);
                 }
+                Level1_Wall.clear();
+
                 for(int i=0; i<Level1_Brick.size(); i++)
                 {
                     World_Level1.DestroyBody(Level1_Brick[i]);
-
-//                    if(physics::isDestroyed(Level1_Brick[i])!=true)
-//                    {
-//                        physics::deleteBlock(World_Level1,Level1_Brick[i]);
-//                        Level1_Brick.erase(Level1_Brick.begin()+i);
-//                        cout<<Level1_Brick.size()<<endl;
-////                        Level1_Brick.clear();
-//                    }
-                   // World_Level1.
                 }
                 Level1_Brick.clear();
 
-                    if(Level1_Ball!=0)
+                    if(Level1_Ball != NULL)
                     {
-                        cout<<"delete ball"<<endl;
                         Level1_Ball->removeBody();
                     }
-                    if(Level1_Paddle->res!=0)
+                    if(Level1_Paddle != NULL)
                     {
-                        cout<<"delete paddle"<<endl;
                         Level1_Paddle->removeBody();
                     }
 
@@ -495,7 +481,7 @@ int main()
 
                 Level1_i++;
                 Level1_BrickSpaceX+=95;
-                cout<<"creating bricks: "<<Level1_Brick.size()<<endl;
+//                cout<<"creating bricks: "<<Level1_Brick.size()<<endl;
 
                 if(Level1_i==8&&Level1_BrickSpaceY<=240)
                 {
@@ -683,7 +669,6 @@ int main()
                         //falling brick hitting floor
                         if(physics::checkCollision(Level1_Brick[i],Level1_Wall[3])==true)
                         {
-                            cout<<"DELETE"<<endl;
                             Level1_Brick[i]->SetTransform(b2Vec2(-10,-10),Level1_Brick[i]->GetAngle());
                             Level1_Brick[i]->SetType(b2_staticBody);
                             Bar_Score++;
@@ -721,7 +706,6 @@ int main()
             for(auto i : Level1_Background)
                 window.draw(i);
             physics::displayWorld(World_Level1,window);
-
         }
         if(Bar==true)
         {
