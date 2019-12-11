@@ -1,5 +1,6 @@
 //LEARNED: ALL VECTORS NEED A PUSHBACK FIRST, also learned resize
 //future: can add some health losing/point gaining iamges on menu/explosions on removed blocks
+//spice up the menu a bit
 //learned pushing back 3sets into a text
 
 //!!work o nsetting paddle same x as ball
@@ -14,9 +15,11 @@
 //!!fades
 //!- work on clicking game over and menu circle aniamting
 //!!!work on checking if ball is destroyed and makign new one for level 1 ball.h
-//total score end screen
+//!!total score end screen
 //!!!FIRGURE OUT SAFETY NET FOR BALL/PADDLE DELETING
-//reset lvl1 score
+//!!reset lvl1 score
+//win lvl1
+//speed up ball/add health powerup
 
 
 //overall .clears and deleteblocks in onces//new METHODS
@@ -59,6 +62,7 @@ int main()
     bool OV_Mouse=true;
     bool Menu=true;
     bool Menu_Once=true;
+    bool Game_BarReset=false;
 
     bool Menu_PaddleRight,Menu_PaddleLeft,Menu_CountDown,Menu_CountUp,Menu_DeleteBlock;
     bool Level1,Level1_Once,Level1_CountDown,Level1_CountUp,Level1_AllowCollisions,Level1_CreateBricks;
@@ -98,7 +102,6 @@ int main()
     b2World World_Level1(b2Vec2(0.0,0.1));
     Paddle *Menu_Paddle = NULL,*Level1_Paddle = NULL;
     Ball *Menu_Ball = NULL,*Level1_Ball = NULL;
-
 
     while(window.isOpen()&& !Keyboard::isKeyPressed(Keyboard::Escape))
     {
@@ -140,9 +143,6 @@ int main()
                 Menu_VxB=173;
                 Menu_BrickSpaceX=0;
                 Menu_BrickSpaceY=0;
-
-                Game_TotalScore=0;
-                Bar_Score=0;
 
                 Menu_Clock.resize(2);
 
@@ -353,8 +353,16 @@ int main()
 
                 Bar=true;
                 Bar_Once=true;
+
+                Game_TotalScore=0;
                 Bar_Score=0;
-                Bar_Lives=1;//set to 5
+                Bar_Lives=999; //RESET TO 5 ON FINAL
+
+                if(Game_BarReset==true){
+                Bar_Text[2].setString("POINTS: "+to_string(Bar_Score));
+                Bar_Text[3].setString("LIVES: "+to_string(Bar_Lives));
+                Game_BarReset=false;
+                }
 
                 Level1_Counter=0;
                 Level1_CounterRemind=0;
@@ -499,7 +507,7 @@ int main()
             if(Level1_Counter>47)
             {
                 Level1_CreateBricks=false;
-                Level1_Ball->speed=350;
+                Level1_Ball->speed=1650;//set to 350
                 //moving paddle
                 if(Keyboard::isKeyPressed(Keyboard::A)==true)
                     Level1_Paddle->setVelocity(Vector2f(-300,0));
@@ -663,14 +671,14 @@ int main()
                     {
                         if(Level1_Clock[3].getElapsedTime().asSeconds()>=0.5&&physics::isDestroyed(Level1_Brick[i])!=true&&Level1_Brick[i]->GetType()==b2_dynamicBody)
                         {
-
                             Level1_Brick[i]->SetGravityScale(200);
                         }
                         //falling brick hitting floor
                         if(physics::checkCollision(Level1_Brick[i],Level1_Wall[3])==true)
                         {
                             Level1_Brick[i]->SetTransform(b2Vec2(-10,-10),Level1_Brick[i]->GetAngle());
-                            Level1_Brick[i]->SetType(b2_staticBody);
+//                            Level1_Brick[i]->SetType(b2_staticBody);
+                            Game_TotalScore++;
                             Bar_Score++;
                             Bar_Text[4].setString("+1");
                             Bar_Clock[0].restart();
@@ -680,7 +688,8 @@ int main()
                         if(physics::checkCollision(Level1_Brick[i])==true&&physics::getPosition(Level1_Brick[i]).y<730&&physics::getPosition(Level1_Brick[i]).y>630)
                         {
                             Level1_Brick[i]->SetTransform(b2Vec2(-10,-10),Level1_Brick[i]->GetAngle());
-                            Level1_Brick[i]->SetType(b2_staticBody);
+//                            Level1_Brick[i]->SetType(b2_staticBody);
+                            Game_TotalScore+=2;
                             Bar_Score+=2;
                             Bar_Text[4].setString("+2");
                             Bar_Clock[0].restart();
@@ -700,7 +709,23 @@ int main()
                     }
 
                 }
+            for(int i=0; i<=47; i++)
+            {
+
+            if(Level1_Brick[i]->GetType()==b2_staticBody)
+            {
+                cout<<"still playing"<<endl;
             }
+            else{
+                cout<<"you won!"<<endl;
+            }
+
+            }
+            }
+
+
+
+
             Level1_Ball->updatePosition();
             Level1_Paddle->updatePosition();
             for(auto i : Level1_Background)
@@ -712,6 +737,9 @@ int main()
             if(Bar_Once==true)
             {
                 Bar_Clock.resize(2);
+
+                Bar_Background.clear();
+                Bar_Text.clear();
 
                 Bar_Background.push_back(RectangleShape(Vector2f(800,50)));
                 Bar_Background.back().setFillColor(Color(0,0,0,180));
@@ -802,8 +830,6 @@ int main()
                 Lost_VxG=76;
                 Lost_VxB=60;
                 cout<<"Lost true"<<endl;
-
-                Game_TotalScore=5;
 
                 Lost_Clock[1].restart();
                 for(int i=1;i<=9;i++) Lost_Fades[i]=false;
@@ -1036,6 +1062,7 @@ int main()
                 Lost_Text[5].setPosition(Vector2f(Lost_Background[1].getPosition().x+(Lost_Background[1].getSize().x/2)-15,Lost_Background[1].getPosition().y+(Lost_Background[1].getSize().y/2)-15));
                 if(OV_Mouse==true)
                 {
+                    Game_BarReset=true;
                     Menu=true;
                     Menu_Once=true;
                     Lost=false;
@@ -1055,6 +1082,7 @@ int main()
                 Lost_Text[6].setPosition(Vector2f(Lost_Background[2].getPosition().x+(Lost_Background[2].getSize().x/2)-15,Lost_Background[2].getPosition().y+(Lost_Background[2].getSize().y/2)-15));
                 if(OV_Mouse==true)
                 {
+                    Game_BarReset=true;
                     Level1=true;
                     Level1_Once=true;
                     Lost=false;
