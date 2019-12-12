@@ -20,6 +20,7 @@
 //!!reset lvl1 score
 //win lvl1
 //speed up ball/add health powerup
+//finding when all bricksa re doff screen
 
 
 //overall .clears and deleteblocks in onces//new METHODS
@@ -57,6 +58,7 @@ int main()
     Color Level1_BGreenC(Color(46,204,113,255));
     Color Level1_BBlueC(Color(52,152,219,255));
     Color Level1_BPurpleC(Color(155,89,182,255));
+    //Next game will have vector<Color>
 
 //Bools
     bool OV_Mouse=true;
@@ -709,19 +711,26 @@ int main()
                     }
 
                 }
-            for(int i=0; i<=47; i++)
-            {
+                for(int i=0; i<Level1_Brick.size(); i++)
+                {
+                    int Level1_ExistC=0;
+                    if(Level1_Brick[i]->GetType()==b2_staticBody)
+                    {
+                        Level1_ExistC++;
+                        cout<<Level1_ExistC<<endl;
+                    }
+//                    if(i==47)
+//                    {
+//                        typecount=0;
+//                    }
+                    if(Level1_ExistC==NULL)//work on this tmrw
+                    {bnkjhndkfg
+                        cout<<"WON"<<endl;
+                    }
+                }
+            }
 
-            if(Level1_Brick[i]->GetType()==b2_staticBody)
-            {
-                cout<<"still playing"<<endl;
-            }
-            else{
-                cout<<"you won!"<<endl;
-            }
 
-            }
-            }
 
 
 
