@@ -43,7 +43,7 @@ int main()
     vector<Vertex> Menu_Vertex,Lost_Vertex;
     vector<Block> Menu_Wall,Menu_Brick,Level1_Brick,Level1_Wall;
     vector<Vector2f> Menu_BrickPoints,Level1_BrickPoints;
-    vector<Text> Menu_Text,Bar_Text,Lost_Text;
+    vector<Text> Level1_Text,Menu_Text,Bar_Text,Lost_Text;
     vector<Clock> Menu_Clock,Level1_Clock,Bar_Clock,Lost_Clock;
     vector<bool> Lost_Fades;
 
@@ -73,7 +73,7 @@ int main()
 
 //Ints
     int Menu_VxR,Menu_VxG,Menu_VxB,Menu_BrickSpaceX,Menu_BrickSpaceY;
-    int Level1_FadeBricks,Level1_Counter,Level1_CounterRemind,Level1_i,Level1_BrickSpaceX,Level1_BrickSpaceY,Level1_BCR;
+    int Level1_CountOfBlocksLeft,Level1_FadeBricks,Level1_Counter,Level1_CounterRemind,Level1_i,Level1_BrickSpaceX,Level1_BrickSpaceY,Level1_BCR;
     int Bar_Score,Bar_Lives;
     int Lost_VxR,Lost_VxG,Lost_VxB;
     int Game_TotalScore,Game_CurrentLevel;
@@ -359,6 +359,7 @@ int main()
                 Game_TotalScore=0;
                 Bar_Score=0;
                 Bar_Lives=999; //RESET TO 5 ON FINAL
+                Level1_CountOfBlocksLeft=0;
 
                 if(Game_BarReset==true){
                 Bar_Text[2].setString("POINTS: "+to_string(Bar_Score));
@@ -374,7 +375,7 @@ int main()
                 Level1_BCR=143;
                 Level1_FadeBricks=0;
 
-                Level1_Clock.resize(6);
+                Level1_Clock.resize(7);
                 Level1_Clock[0].restart();
                 Level1_Clock[5].restart();
 
@@ -399,10 +400,23 @@ int main()
                         Level1_Paddle->removeBody();
                     }
 
+                Level1_Text.clear();
+
                 //Creating rectangle shapes
                 Level1_Background.push_back(RectangleShape(Vector2f(800,800)));
                 Level1_Background.back().setFillColor(Color(Menu_BrickColor));
                 Level1_Background.back().setPosition(Vector2f(0,0));
+
+                Level1_Background.push_back(RectangleShape(Vector2f(800,800)));
+                Level1_Background.back().setFillColor(Color(0,0,0,0));
+                Level1_Background.back().setPosition(Vector2f(0,0));
+
+                //Text
+                Level1_Text.push_back(Text("CONGRATS!\n Next level!",Game_Font1,160));
+                Level1_Text.back().setPosition(Vector2f(300,250));
+                Level1_Text.back().setFillColor(Color::White);
+                Level1_Text.back().setOutlineColor(Color::Black);
+                Level1_Text.back().setOutlineThickness(7);
 
                 //Paddle and walls
                 Level1_Paddle=new Paddle(World_Level1,400,700,150,25);
@@ -424,7 +438,7 @@ int main()
 
                 Level1_Once=false;
             }
-
+//{
             if(Level1_Brick.size()==48)
                 Level1_AllowCollisions=true;
             //Level1 brick background gradient
@@ -664,10 +678,6 @@ int main()
                         }
                     }
 
-
-
-
-
                     //Deleting any dynamic bricks after 0.5s after hitting any brick
                     for(int i=0; i<=47; i++)
                     {
@@ -680,6 +690,7 @@ int main()
                         {
                             Level1_Brick[i]->SetTransform(b2Vec2(-10,-10),Level1_Brick[i]->GetAngle());
 //                            Level1_Brick[i]->SetType(b2_staticBody);
+                            Level1_CountOfBlocksLeft++;
                             Game_TotalScore++;
                             Bar_Score++;
                             Bar_Text[4].setString("+1");
@@ -691,6 +702,7 @@ int main()
                         {
                             Level1_Brick[i]->SetTransform(b2Vec2(-10,-10),Level1_Brick[i]->GetAngle());
 //                            Level1_Brick[i]->SetType(b2_staticBody);
+                            Level1_CountOfBlocksLeft++;
                             Game_TotalScore+=2;
                             Bar_Score+=2;
                             Bar_Text[4].setString("+2");
@@ -711,24 +723,33 @@ int main()
                     }
 
                 }
-                for(int i=0; i<Level1_Brick.size(); i++)
-                {
-                    int Level1_ExistC=0;
-                    if(Level1_Brick[i]->GetType()==b2_staticBody)
-                    {
-                        Level1_ExistC++;
-                        cout<<Level1_ExistC<<endl;
-                    }
-//                    if(i==47)
+                //}
+//                for(int i=0; i<Level1_Brick.size(); i++)
+//                {
+//                    int Level1_ExistC=0;
+//                    if(Level1_Brick[i]->GetType()==b2_staticBody)
 //                    {
-//                        typecount=0;
+//                        Level1_ExistC++;
+//                        cout<<Level1_ExistC<<endl;
 //                    }
-                    if(Level1_ExistC==NULL)//work on this tmrw
-                    {bnkjhndkfg
-                        cout<<"WON"<<endl;
-                    }
-                }
-            }
+////                    if(i==47)
+////                    {
+////                        typecount=0;
+////                    }
+//                    if(Level1_ExistC==47)//work on this tmrw
+//                    {
+//                        cout<<"WON"<<endl;
+//                    }
+//                }
+
+
+
+
+
+//}
+
+
+
 
 
 
@@ -737,9 +758,32 @@ int main()
 
             Level1_Ball->updatePosition();
             Level1_Paddle->updatePosition();
-            for(auto i : Level1_Background)
-                window.draw(i);
+//            for(auto i : Level1_Background)
+//                window.draw(i);
+                for(int i=0; i<=0; i++)
+                {
+                    window.draw(Level1_Background[i]);
+                }
             physics::displayWorld(World_Level1,window);
+
+
+
+                //            cout<<Level1_CountOfBlocksLeft<<endl;
+                if(Level1_CountOfBlocksLeft>1)//set ==48
+                {
+                    Level1_Ball->speed=50;
+
+                    if(Level1_Clock[6].getElapsedTime().asSeconds()>=0.1&&Level1_Background[1].getFillColor().a<125)
+                    {
+                        Level1_Background[1].setFillColor(Level1_Background[1].getFillColor()+Color(0,0,0,15));
+                        Level1_Clock[6].restart();
+                    }
+                    for(int i=1; i<=1; i++)adsfgfd//work on placing text on screen
+                    {
+                        window.draw(Level1_Background[i]);
+                    }
+                }
+            }
         }
         if(Bar==true)
         {
