@@ -18,9 +18,10 @@
 //!!total score end screen
 //!!!FIRGURE OUT SAFETY NET FOR BALL/PADDLE DELETING
 //!!reset lvl1 score
-//win lvl1
-//speed up ball/add health powerup
-//finding when all bricksa re doff screen
+//!!win lvl1
+//!!speed up ball/add health powerup
+//!!finding when all bricksa re doff screen
+//menu spice up//blurred sides
 
 
 //overall .clears and deleteblocks in onces//new METHODS
@@ -60,6 +61,9 @@ int main()
     Color Level1_BPurpleC(Color(155,89,182,255));
     //Next game will have vector<Color>
 
+    Texture Menu_BlurSidesTex;
+    Menu_BlurSidesTex.loadFromFile("Menu_BlurSidesTex.png");
+
 //Bools
     bool OV_Mouse=true;
     bool Menu=true;
@@ -67,7 +71,7 @@ int main()
     bool Game_BarReset=false;
 
     bool Menu_PaddleRight,Menu_PaddleLeft,Menu_CountDown,Menu_CountUp,Menu_DeleteBlock;
-    bool Level1,Level1_Once,Level1_CountDown,Level1_CountUp,Level1_AllowCollisions,Level1_CreateBricks;
+    bool Level1_NextLevel,Level1_CounterOnce,Level1,Level1_Once,Level1_CountDown,Level1_CountUp,Level1_AllowCollisions,Level1_CreateBricks;
     bool Lost,Lost_Once,Lost_CountDown,Lost_CountUp;
     bool Bar,Bar_Once;
 
@@ -79,7 +83,7 @@ int main()
     int Game_TotalScore,Game_CurrentLevel;
 
 //Points
-    Menu_BrickPoints.push_back(Vector2f(0,0));
+    Menu_BrickPoints.push_back(Vector2f(0,0)); // should go in menu_once
     Menu_BrickPoints.push_back(Vector2f(40,6));
     Menu_BrickPoints.push_back(Vector2f(80,0));
     Menu_BrickPoints.push_back(Vector2f(80,40));
@@ -87,7 +91,7 @@ int main()
     Menu_BrickPoints.push_back(Vector2f(0,40));
     Menu_BrickPoints.push_back(Vector2f(0,0));
 
-    Level1_BrickPoints.push_back(Vector2f(0,0));
+    Level1_BrickPoints.push_back(Vector2f(0,0)); // should go in level1_once
     Level1_BrickPoints.push_back(Vector2f(40,6));
     Level1_BrickPoints.push_back(Vector2f(80,0));
     Level1_BrickPoints.push_back(Vector2f(80,40));
@@ -202,6 +206,8 @@ int main()
                 {
                     Menu_Brick.push_back(physics::createPolygon(World_Menu,26+Menu_BrickSpaceX,25+Menu_BrickSpaceY,Menu_BrickPoints,b2_staticBody));
                     physics::setBlockColor(Menu_Brick.back(),Menu_BrickColor);
+                    physics::setBlockOutline(Menu_Brick.back(),Color(255,255,255,255));
+                    physics::setOutlineThickness(Menu_Brick.back(),3);
 
                     Menu_BrickSpaceX+=95;
 
@@ -219,6 +225,11 @@ int main()
                 Menu_Background.back().setFillColor(Color(Menu_BrickColor));
                 Menu_Background.back().setOrigin(Vector2f(Menu_Background.back().getSize().x/2,Menu_Background.back().getSize().y/2));
                 Menu_Background.back().setPosition(Vector2f(400,520));
+
+                Menu_Background.push_back(RectangleShape(Vector2f(800,800)));//behind play
+                Menu_Background.back().setFillColor(Color(255,255,255,1));
+                Menu_Background.back().setPosition(Vector2f(0,0));
+                Menu_Background.back().setTexture(&Menu_BlurSidesTex);
 
                 Menu_Text.push_back(Text("BRICK",Game_Font1,160));
                 Menu_Text.back().setPosition(Vector2f(300,250));
@@ -352,6 +363,8 @@ int main()
                 Level1_CountUp=true;
                 Level1_AllowCollisions=false;
                 Level1_CreateBricks=true;
+                Level1_CounterOnce=true;
+                Level1_NextLevel=true;
 
                 Bar=true;
                 Bar_Once=true;
@@ -375,7 +388,7 @@ int main()
                 Level1_BCR=143;
                 Level1_FadeBricks=0;
 
-                Level1_Clock.resize(7);
+                Level1_Clock.resize(8);
                 Level1_Clock[0].restart();
                 Level1_Clock[5].restart();
 
@@ -412,11 +425,12 @@ int main()
                 Level1_Background.back().setPosition(Vector2f(0,0));
 
                 //Text
-                Level1_Text.push_back(Text("CONGRATS!\n Next level!",Game_Font1,160));
-                Level1_Text.back().setPosition(Vector2f(300,250));
-                Level1_Text.back().setFillColor(Color::White);
+                Level1_Text.push_back(Text("CONGRATS!\n Next level!",Game_Font1,60));
+                Level1_Text.back().setPosition(Vector2f(400,400));
+                Level1_Text.back().setFillColor(Color(255,255,255,0));
                 Level1_Text.back().setOutlineColor(Color::Black);
                 Level1_Text.back().setOutlineThickness(7);
+                Level1_Text.back().setOrigin(Vector2f(Level1_Text.back().getLocalBounds().width/2,Level1_Text.back().getLocalBounds().height/2));
 
                 //Paddle and walls
                 Level1_Paddle=new Paddle(World_Level1,400,700,150,25);
@@ -522,8 +536,11 @@ int main()
             }
             if(Level1_Counter>47)
             {
+                if(Level1_CounterOnce==true){
                 Level1_CreateBricks=false;
                 Level1_Ball->speed=1650;//set to 350
+                Level1_CounterOnce=false;
+                }
                 //moving paddle
                 if(Keyboard::isKeyPressed(Keyboard::A)==true)
                     Level1_Paddle->setVelocity(Vector2f(-300,0));
@@ -710,7 +727,7 @@ int main()
                             Bar_Text[2].setString("POINTS: "+to_string(Bar_Score));
                         }
                         //ball hitting floor
-                        if(Level1_Ball->checkCollision(Level1_Wall[3])==true)
+                        if(Level1_Ball->checkCollision(Level1_Wall[3])==true&&Level1_CountOfBlocksLeft<1)//SET ==48
                         {
                             Level1_Ball->removeBody();
                             Level1_Ball=new Ball(World_Level1,Level1_Paddle->getPosition().x,Level1_Paddle->getPosition().y-20,25);
@@ -754,16 +771,15 @@ int main()
 
 
 
-
+        }
 
             Level1_Ball->updatePosition();
             Level1_Paddle->updatePosition();
 //            for(auto i : Level1_Background)
 //                window.draw(i);
-                for(int i=0; i<=0; i++)
-                {
-                    window.draw(Level1_Background[i]);
-                }
+                    cout<<"draw backgrounds"<<endl;
+                    window.draw(Level1_Background[0]);
+
             physics::displayWorld(World_Level1,window);
 
 
@@ -771,19 +787,32 @@ int main()
                 //            cout<<Level1_CountOfBlocksLeft<<endl;
                 if(Level1_CountOfBlocksLeft>1)//set ==48
                 {
-                    Level1_Ball->speed=50;
+                    if(Level1_NextLevel==true){
+                        Level1_Clock[7].restart();
+                        Level1_Ball->speed=50;
+                        Level1_NextLevel=false;
+                    }
+
 
                     if(Level1_Clock[6].getElapsedTime().asSeconds()>=0.1&&Level1_Background[1].getFillColor().a<125)
                     {
                         Level1_Background[1].setFillColor(Level1_Background[1].getFillColor()+Color(0,0,0,15));
+                        Level1_Background[0].setFillColor(Level1_Background[0].getFillColor()+Color(0,0,0,17));
                         Level1_Clock[6].restart();
                     }
-                    for(int i=1; i<=1; i++)adsfgfd//work on placing text on screen
-                    {
-                        window.draw(Level1_Background[i]);
+                    else if(Level1_Background[1].getFillColor().a>125){
+                        Level1_Text[0].setFillColor(Color(255,255,255,255));
                     }
+                    if(Level1_Clock[7].getElapsedTime().asSeconds()>6){
+                        Level1=false;
+                        Menu=true;
+                        Menu_Once=true;
+                    }
+                        window.draw(Level1_Background[1]);
+                        window.draw(Level1_Text[0]);
+
                 }
-            }
+
         }
         if(Bar==true)
         {
