@@ -21,13 +21,14 @@
 //!!win lvl1
 //!!speed up ball/add health powerup
 //!!finding when all bricksa re doff screen
-//menu spice up//blurred sides
+//menu spice up//!!blurred sides//audio
 
 
 //overall .clears and deleteblocks in onces//new METHODS
 
 #include "physics.h"
 #include <vector>
+#include <SFML/Audio.hpp>
 #include <string>
 #include "Paddle.h"
 #include "Ball.h"
@@ -98,6 +99,20 @@ int main()
     Level1_BrickPoints.push_back(Vector2f(40,34));
     Level1_BrickPoints.push_back(Vector2f(0,40));
     Level1_BrickPoints.push_back(Vector2f(0,0));
+//Sounds
+
+    SoundBuffer OV_SoundBuffer1;
+    Sound OV_Soundtrack1;
+
+    OV_SoundBuffer1.loadFromFile("Game_Audio1.ogg");
+    OV_Soundtrack1.setBuffer(Game_SoundBuffer1);
+
+    OV_Soundtrack1.setLoop(true);
+    OV_Soundtrack1.setVolume(100);
+    OV_Soundtrack1.play();
+
+
+    workign here
 
 //Font
     Game_Font1.loadFromFile("Game_Font1.ttf");
@@ -226,8 +241,8 @@ int main()
                 Menu_Background.back().setOrigin(Vector2f(Menu_Background.back().getSize().x/2,Menu_Background.back().getSize().y/2));
                 Menu_Background.back().setPosition(Vector2f(400,520));
 
-                Menu_Background.push_back(RectangleShape(Vector2f(800,800)));//behind play
-                Menu_Background.back().setFillColor(Color(255,255,255,1));
+                Menu_Background.push_back(RectangleShape(Vector2f(800,800)));
+                Menu_Background.back().setFillColor(Color(255,255,255,100));
                 Menu_Background.back().setPosition(Vector2f(0,0));
                 Menu_Background.back().setTexture(&Menu_BlurSidesTex);
 
@@ -343,8 +358,8 @@ int main()
 
 
             window.draw(&Menu_Vertex[0],Menu_Vertex.size(),TrianglesFan);//Background gradient
-            for(auto i:Menu_Background)
-                window.draw(i);
+
+                window.draw(Menu_Background[0]);
 //        for(auto i:Menu_Brick) window.draw(i);
             physics::displayWorld(World_Menu,window);
 //        window.draw(*Menu_Paddle);
@@ -353,6 +368,7 @@ int main()
             Menu_Ball->updatePosition();
             for(auto i:Menu_Text)
                 window.draw(i);
+
         }
         if(Level1==true)
         {
@@ -797,7 +813,7 @@ int main()
                     if(Level1_Clock[6].getElapsedTime().asSeconds()>=0.1&&Level1_Background[1].getFillColor().a<125)
                     {
                         Level1_Background[1].setFillColor(Level1_Background[1].getFillColor()+Color(0,0,0,15));
-                        Level1_Background[0].setFillColor(Level1_Background[0].getFillColor()+Color(0,0,0,17));
+                        Level1_Text[0].setFillColor(Level1_Background[0].getFillColor()+Color(0,0,0,17));
                         Level1_Clock[6].restart();
                     }
                     else if(Level1_Background[1].getFillColor().a>125){
@@ -1183,6 +1199,7 @@ int main()
             for(auto i:Lost_Text) window.draw(i);
 
         }
+        window.draw(Menu_Background[1]);
 
         window.display();
     }
