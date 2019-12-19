@@ -578,9 +578,10 @@
 	<Box2D/Box2D.h>
 	"physics.h"
 
-1576597719 source:\\2280m01\users\student\lockty752\assignments\assignment3\main.cpp
+1576769782 source:\\2280m01\users\student\lockty752\assignments\assignment3\main.cpp
 	"physics.h"
 	<vector>
+	<SFML/Audio.hpp>
 	<string>
 	"Paddle.h"
 	"Ball.h"
@@ -1146,8 +1147,111 @@
 	<Box2D/Box2D.h>
 	"physics.h"
 
-1576077841 \\2280m01\users\student\lockty752\assignments\assignment3\ball.h
+1576769335 \\2280m01\users\student\lockty752\assignments\assignment3\ball.h
 	<SFML/Graphics.hpp>
 	<Box2D/Box2D.h>
 	"physics.h"
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio.hpp
+	<SFML/System.hpp>
+	<SFML/Audio/InputSoundFile.hpp>
+	<SFML/Audio/Listener.hpp>
+	<SFML/Audio/Music.hpp>
+	<SFML/Audio/OutputSoundFile.hpp>
+	<SFML/Audio/Sound.hpp>
+	<SFML/Audio/SoundBuffer.hpp>
+	<SFML/Audio/SoundBufferRecorder.hpp>
+	<SFML/Audio/SoundFileFactory.hpp>
+	<SFML/Audio/SoundFileReader.hpp>
+	<SFML/Audio/SoundFileWriter.hpp>
+	<SFML/Audio/SoundRecorder.hpp>
+	<SFML/Audio/SoundSource.hpp>
+	<SFML/Audio/SoundStream.hpp>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\inputsoundfile.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/System/NonCopyable.hpp>
+	<SFML/System/Time.hpp>
+	<string>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\export.hpp
+	<SFML/Config.hpp>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\listener.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/System/Vector3.hpp>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\music.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/Audio/SoundStream.hpp>
+	<SFML/Audio/InputSoundFile.hpp>
+	<SFML/System/Mutex.hpp>
+	<SFML/System/Time.hpp>
+	<string>
+	<vector>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\soundstream.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/Audio/SoundSource.hpp>
+	<SFML/System/Thread.hpp>
+	<SFML/System/Time.hpp>
+	<SFML/System/Mutex.hpp>
+	<cstdlib>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\soundsource.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/Audio/AlResource.hpp>
+	<SFML/System/Vector3.hpp>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\alresource.hpp
+	<SFML/Audio/Export.hpp>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\outputsoundfile.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/System/NonCopyable.hpp>
+	<string>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\sound.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/Audio/SoundSource.hpp>
+	<SFML/System/Time.hpp>
+	<cstdlib>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\soundbuffer.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/Audio/AlResource.hpp>
+	<SFML/System/Time.hpp>
+	<string>
+	<vector>
+	<set>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\soundbufferrecorder.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/Audio/SoundBuffer.hpp>
+	<SFML/Audio/SoundRecorder.hpp>
+	<vector>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\soundrecorder.hpp
+	<SFML/Audio/Export.hpp>
+	<SFML/Audio/AlResource.hpp>
+	<SFML/System/Thread.hpp>
+	<SFML/System/Time.hpp>
+	<vector>
+	<string>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\soundfilefactory.hpp
+	<SFML/Audio/Export.hpp>
+	<string>
+	<vector>
+	<SFML/Audio/SoundFileFactory.inl>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\soundfilefactory.inl
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\soundfilereader.hpp
+	<SFML/Audio/Export.hpp>
+	<string>
+
+1524784530 \\2280m01\users\student\lockty752\dev\sfml\include\\sfml\audio\soundfilewriter.hpp
+	<SFML/Audio/Export.hpp>
+	<string>
 

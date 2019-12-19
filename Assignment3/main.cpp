@@ -1,31 +1,3 @@
-//LEARNED: ALL VECTORS NEED A PUSHBACK FIRST, also learned resize
-//future: can add some health losing/point gaining iamges on menu/explosions on removed blocks
-//spice up the menu a bit
-//learned pushing back 3sets into a text
-
-//!!work o nsetting paddle same x as ball
-//!!work on creating menu bricks correctly
-//!!work on spinning menu bricks
-//!!work on menu text and paly  button
-//!!Work on creating level1 bricks
-//!!Work on colouring shapes by changing like gradient and add paddle/ball
-//!!work on creating/moving paddle!! ball point systems
-//!!work on destrouying bricks
-//!!game over screen, !!time alive, !!poitns gained, !!restart button, !!menu button NEW total score, total time?
-//!!fades
-//!- work on clicking game over and menu circle aniamting
-//!!!work on checking if ball is destroyed and makign new one for level 1 ball.h
-//!!total score end screen
-//!!!FIRGURE OUT SAFETY NET FOR BALL/PADDLE DELETING
-//!!reset lvl1 score
-//!!win lvl1
-//!!speed up ball/add health powerup
-//!!finding when all bricksa re doff screen
-//menu spice up//!!blurred sides//audio
-
-
-//overall .clears and deleteblocks in onces//new METHODS
-
 #include "physics.h"
 #include <vector>
 #include <SFML/Audio.hpp>
@@ -35,7 +7,6 @@
 
 using namespace std;
 using namespace sf;
-
 
 int main()
 {
@@ -50,20 +21,12 @@ int main()
     vector<bool> Lost_Fades;
 
     Font Game_Font1;
-
-    Color Menu_BrickColor(Color(243,156,18,255));
-    Color Level1_BrickColor(Color(142,68,173,255));
-
-    Color Level1_BRedC(Color(231,76,60,255));
-    Color Level1_BOrangeC(Color(230,126,34,255));
-    Color Level1_BYellowC(Color(241,196,15,255));
-    Color Level1_BGreenC(Color(46,204,113,255));
-    Color Level1_BBlueC(Color(52,152,219,255));
-    Color Level1_BPurpleC(Color(155,89,182,255));
-    //Next game will have vector<Color>
-
     Texture Menu_BlurSidesTex;
-    Menu_BlurSidesTex.loadFromFile("Menu_BlurSidesTex.png");
+    SoundBuffer OV_SoundBuffer1;
+    Sound OV_Soundtrack1;
+
+    Color Level1_BPurpleC(Color(155,89,182,255)),Level1_BBlueC(Color(52,152,219,255)),Level1_BGreenC(Color(46,204,113,255)),Level1_BYellowC(Color(241,196,15,255)),Level1_BOrangeC(Color(230,126,34,255)),Level1_BRedC(Color(231,76,60,255)),Level1_BrickColor(Color(142,68,173,255)),Menu_BrickColor(Color(243,156,18,255));
+    //Next game will have vector<Color>
 
 //Bools
     bool OV_Mouse=true;
@@ -83,44 +46,23 @@ int main()
     int Lost_VxR,Lost_VxG,Lost_VxB;
     int Game_TotalScore,Game_CurrentLevel;
 
-//Points
-    Menu_BrickPoints.push_back(Vector2f(0,0)); // should go in menu_once
-    Menu_BrickPoints.push_back(Vector2f(40,6));
-    Menu_BrickPoints.push_back(Vector2f(80,0));
-    Menu_BrickPoints.push_back(Vector2f(80,40));
-    Menu_BrickPoints.push_back(Vector2f(40,34));
-    Menu_BrickPoints.push_back(Vector2f(0,40));
-    Menu_BrickPoints.push_back(Vector2f(0,0));
-
-    Level1_BrickPoints.push_back(Vector2f(0,0)); // should go in level1_once
-    Level1_BrickPoints.push_back(Vector2f(40,6));
-    Level1_BrickPoints.push_back(Vector2f(80,0));
-    Level1_BrickPoints.push_back(Vector2f(80,40));
-    Level1_BrickPoints.push_back(Vector2f(40,34));
-    Level1_BrickPoints.push_back(Vector2f(0,40));
-    Level1_BrickPoints.push_back(Vector2f(0,0));
 //Sounds
-
-    SoundBuffer OV_SoundBuffer1;
-    Sound OV_Soundtrack1;
-
     OV_SoundBuffer1.loadFromFile("Game_Audio1.ogg");
-    OV_Soundtrack1.setBuffer(Game_SoundBuffer1);
-
+    OV_Soundtrack1.setBuffer(OV_SoundBuffer1);
     OV_Soundtrack1.setLoop(true);
     OV_Soundtrack1.setVolume(100);
     OV_Soundtrack1.play();
 
-
-    workign here
-
-//Font
+//Fonts
     Game_Font1.loadFromFile("Game_Font1.ttf");
+
+//Textures
+    Menu_BlurSidesTex.loadFromFile("Menu_BlurSidesTex.png");
 
     RenderWindow window(VideoMode(800,800),"Assignment3: Brick Breaker");
     window.setFramerateLimit(60);
-    b2World World_Menu(b2Vec2(0.0,0.0));
-    b2World World_Level1(b2Vec2(0.0,0.1));
+    b2World World_Menu(b2Vec2(0.0,0.0)),World_Level1(b2Vec2(0.0,0.1));
+
     Paddle *Menu_Paddle = NULL,*Level1_Paddle = NULL;
     Ball *Menu_Ball = NULL,*Level1_Ball = NULL;
 
@@ -132,17 +74,10 @@ int main()
         {
             if(event.type == Event::Closed)
                 window.close();
-
-        if(event.type==Event::MouseButtonReleased&&event.mouseButton.button==Mouse::Left)
-            OV_Mouse=true;
+            if(event.type==Event::MouseButtonReleased&&event.mouseButton.button==Mouse::Left)
+                OV_Mouse=true;
         }
         window.clear();
-
-//    cout<<Mouse::getPosition(window).x<<": Mouse X-Pos"<<endl;
-//    cout<<Mouse::getPosition(window).y<<": Mouse Y-Pos"<<endl;
-//    cout<<"---"<<endl;
-//    if(OV_Mouse==true) cout<<"Clicked Mouse"<<endl;
-//    cout<<OV_Mouse<<endl;
 
         if(Menu==true)
         {
@@ -183,20 +118,22 @@ int main()
                 Menu_Text.clear();
 
                 if(Menu_Ball != NULL)
-                    {
-                        Menu_Ball->removeBody();
-                    }
-                    if(Menu_Paddle != NULL)
-                    {
-                        Menu_Paddle->removeBody();
-                    }
+                {
+                    Menu_Ball->removeBody();
+                }
+                if(Menu_Paddle != NULL)
+                {
+                    Menu_Paddle->removeBody();
+                }
 
-//                if(Menu_Paddle->isDestroyed()==false)
-//                    {
-//                        cout<<"delete paddle"<<endl;
-//                        Menu_Paddle->removeBody();
-//                    }
-
+                Menu_BrickPoints.clear();
+                Menu_BrickPoints.push_back(Vector2f(0,0));
+                Menu_BrickPoints.push_back(Vector2f(40,6));
+                Menu_BrickPoints.push_back(Vector2f(80,0));
+                Menu_BrickPoints.push_back(Vector2f(80,40));
+                Menu_BrickPoints.push_back(Vector2f(40,34));
+                Menu_BrickPoints.push_back(Vector2f(0,40));
+                Menu_BrickPoints.push_back(Vector2f(0,0));
 
 
                 Menu_Paddle=new Paddle(World_Menu,400,700,150,25);
@@ -242,7 +179,7 @@ int main()
                 Menu_Background.back().setPosition(Vector2f(400,520));
 
                 Menu_Background.push_back(RectangleShape(Vector2f(800,800)));
-                Menu_Background.back().setFillColor(Color(255,255,255,100));
+                Menu_Background.back().setFillColor(Color(255,255,255,60));
                 Menu_Background.back().setPosition(Vector2f(0,0));
                 Menu_Background.back().setTexture(&Menu_BlurSidesTex);
 
@@ -354,21 +291,13 @@ int main()
                 Menu_Text[2].setFillColor(Color::White);
             }
 
-
-
-
             window.draw(&Menu_Vertex[0],Menu_Vertex.size(),TrianglesFan);//Background gradient
-
-                window.draw(Menu_Background[0]);
-//        for(auto i:Menu_Brick) window.draw(i);
+            window.draw(Menu_Background[0]);
             physics::displayWorld(World_Menu,window);
-//        window.draw(*Menu_Paddle);
             Menu_Paddle->updatePosition();
-//        window.draw(*Menu_Ball);
             Menu_Ball->updatePosition();
             for(auto i:Menu_Text)
                 window.draw(i);
-
         }
         if(Level1==true)
         {
@@ -387,13 +316,14 @@ int main()
 
                 Game_TotalScore=0;
                 Bar_Score=0;
-                Bar_Lives=999; //RESET TO 5 ON FINAL
+                Bar_Lives=999;
                 Level1_CountOfBlocksLeft=0;
 
-                if(Game_BarReset==true){
-                Bar_Text[2].setString("POINTS: "+to_string(Bar_Score));
-                Bar_Text[3].setString("LIVES: "+to_string(Bar_Lives));
-                Game_BarReset=false;
+                if(Game_BarReset==true)
+                {
+                    Bar_Text[2].setString("POINTS: "+to_string(Bar_Score));
+                    Bar_Text[3].setString("LIVES: "+to_string(Bar_Lives));
+                    Game_BarReset=false;
                 }
 
                 Level1_Counter=0;
@@ -420,14 +350,14 @@ int main()
                 }
                 Level1_Brick.clear();
 
-                    if(Level1_Ball != NULL)
-                    {
-                        Level1_Ball->removeBody();
-                    }
-                    if(Level1_Paddle != NULL)
-                    {
-                        Level1_Paddle->removeBody();
-                    }
+                if(Level1_Ball != NULL)
+                {
+                    Level1_Ball->removeBody();
+                }
+                if(Level1_Paddle != NULL)
+                {
+                    Level1_Paddle->removeBody();
+                }
 
                 Level1_Text.clear();
 
@@ -447,6 +377,15 @@ int main()
                 Level1_Text.back().setOutlineColor(Color::Black);
                 Level1_Text.back().setOutlineThickness(7);
                 Level1_Text.back().setOrigin(Vector2f(Level1_Text.back().getLocalBounds().width/2,Level1_Text.back().getLocalBounds().height/2));
+
+                Level1_BrickPoints.clear();
+                Level1_BrickPoints.push_back(Vector2f(0,0));
+                Level1_BrickPoints.push_back(Vector2f(40,6));
+                Level1_BrickPoints.push_back(Vector2f(80,0));
+                Level1_BrickPoints.push_back(Vector2f(80,40));
+                Level1_BrickPoints.push_back(Vector2f(40,34));
+                Level1_BrickPoints.push_back(Vector2f(0,40));
+                Level1_BrickPoints.push_back(Vector2f(0,0));
 
                 //Paddle and walls
                 Level1_Paddle=new Paddle(World_Level1,400,700,150,25);
@@ -468,7 +407,7 @@ int main()
 
                 Level1_Once=false;
             }
-//{
+
             if(Level1_Brick.size()==48)
                 Level1_AllowCollisions=true;
             //Level1 brick background gradient
@@ -535,7 +474,6 @@ int main()
 
                 Level1_i++;
                 Level1_BrickSpaceX+=95;
-//                cout<<"creating bricks: "<<Level1_Brick.size()<<endl;
 
                 if(Level1_i==8&&Level1_BrickSpaceY<=240)
                 {
@@ -552,10 +490,11 @@ int main()
             }
             if(Level1_Counter>47)
             {
-                if(Level1_CounterOnce==true){
-                Level1_CreateBricks=false;
-                Level1_Ball->speed=1650;//set to 350
-                Level1_CounterOnce=false;
+                if(Level1_CounterOnce==true)
+                {
+                    Level1_CreateBricks=false;
+                    Level1_Ball->speed=350;
+                    Level1_CounterOnce=false;
                 }
                 //moving paddle
                 if(Keyboard::isKeyPressed(Keyboard::A)==true)
@@ -575,7 +514,6 @@ int main()
                 if(Level1_Paddle->getPosition().x<=75)
                 {
                     Level1_Paddle->removeBody();
-
                     Level1_Paddle=new Paddle(World_Level1,1,700,150,25);
                     Level1_Paddle->setOutlineColor(Color(149,165,166,255));
                     Level1_Paddle->setOutlineThickness(4);
@@ -583,7 +521,6 @@ int main()
                 if(Level1_Paddle->getPosition().x>=725)
                 {
                     Level1_Paddle->removeBody();
-
                     Level1_Paddle=new Paddle(World_Level1,649,700,150,25);
                     Level1_Paddle->setOutlineColor(Color(149,165,166,255));
                     Level1_Paddle->setOutlineThickness(4);
@@ -593,12 +530,10 @@ int main()
                 //ball glitch into wall fix//untested
                 if(Level1_Ball->getPosition().x<0&&Level1_Ball->getPosition().y<0&&Level1_Ball->getPosition().x>800&&Level1_Ball->getPosition().y>800)
                 {
-                    cout<<"ball has left the box"<<endl;
                     Level1_Ball->removeBody();
                     Level1_Ball=new Ball(World_Level1,Level1_Paddle->getPosition().x,Level1_Paddle->getPosition().y-20,25);
                     Level1_Ball->setOutlineColor(Color(149,165,166,255));
                     Level1_Ball->setOutlineThickness(4);
-                    //remove life?
                 }
                 //if ball is on the bottom layer for 10s, reset pos
                 if(Level1_Ball->getPosition().y>700&&Level1_Clock[2].getElapsedTime().asSeconds()>10)
@@ -711,8 +646,8 @@ int main()
                         }
                     }
 
-                    //Deleting any dynamic bricks after 0.5s after hitting any brick
-                    for(int i=0; i<=47; i++)
+                    //setting gravity to any brick after .5s
+                    for(int i=0; i<Level1_Brick.size(); i++)
                     {
                         if(Level1_Clock[3].getElapsedTime().asSeconds()>=0.5&&physics::isDestroyed(Level1_Brick[i])!=true&&Level1_Brick[i]->GetType()==b2_dynamicBody)
                         {
@@ -722,7 +657,6 @@ int main()
                         if(physics::checkCollision(Level1_Brick[i],Level1_Wall[3])==true)
                         {
                             Level1_Brick[i]->SetTransform(b2Vec2(-10,-10),Level1_Brick[i]->GetAngle());
-//                            Level1_Brick[i]->SetType(b2_staticBody);
                             Level1_CountOfBlocksLeft++;
                             Game_TotalScore++;
                             Bar_Score++;
@@ -734,7 +668,6 @@ int main()
                         if(physics::checkCollision(Level1_Brick[i])==true&&physics::getPosition(Level1_Brick[i]).y<730&&physics::getPosition(Level1_Brick[i]).y>630)
                         {
                             Level1_Brick[i]->SetTransform(b2Vec2(-10,-10),Level1_Brick[i]->GetAngle());
-//                            Level1_Brick[i]->SetType(b2_staticBody);
                             Level1_CountOfBlocksLeft++;
                             Game_TotalScore+=2;
                             Bar_Score+=2;
@@ -743,8 +676,9 @@ int main()
                             Bar_Text[2].setString("POINTS: "+to_string(Bar_Score));
                         }
                         //ball hitting floor
-                        if(Level1_Ball->checkCollision(Level1_Wall[3])==true&&Level1_CountOfBlocksLeft<1)//SET ==48
+                        if(Level1_Ball->checkCollision(Level1_Wall[3])==true&&Level1_CountOfBlocksLeft<47)
                         {
+                            cout<<"ball set to pad"<<endl;
                             Level1_Ball->removeBody();
                             Level1_Ball=new Ball(World_Level1,Level1_Paddle->getPosition().x,Level1_Paddle->getPosition().y-20,25);
                             Level1_Ball->setOutlineColor(Color(149,165,166,255));
@@ -754,81 +688,41 @@ int main()
                             Bar_Text[3].setString("LIVES: "+to_string(Bar_Lives));
                         }
                     }
-
                 }
-                //}
-//                for(int i=0; i<Level1_Brick.size(); i++)
-//                {
-//                    int Level1_ExistC=0;
-//                    if(Level1_Brick[i]->GetType()==b2_staticBody)
-//                    {
-//                        Level1_ExistC++;
-//                        cout<<Level1_ExistC<<endl;
-//                    }
-////                    if(i==47)
-////                    {
-////                        typecount=0;
-////                    }
-//                    if(Level1_ExistC==47)//work on this tmrw
-//                    {
-//                        cout<<"WON"<<endl;
-//                    }
-//                }
-
-
-
-
-
-//}
-
-
-
-
-
-
-
-        }
-
+            }
             Level1_Ball->updatePosition();
             Level1_Paddle->updatePosition();
-//            for(auto i : Level1_Background)
-//                window.draw(i);
-                    cout<<"draw backgrounds"<<endl;
-                    window.draw(Level1_Background[0]);
-
+            window.draw(Level1_Background[0]);
             physics::displayWorld(World_Level1,window);
-
-
-
-                //            cout<<Level1_CountOfBlocksLeft<<endl;
-                if(Level1_CountOfBlocksLeft>1)//set ==48
+            cout<<Level1_CountOfBlocksLeft<<endl;
+            if(Level1_CountOfBlocksLeft==49)
+            {
+                if(Level1_NextLevel==true)
                 {
-                    if(Level1_NextLevel==true){
-                        Level1_Clock[7].restart();
-                        Level1_Ball->speed=50;
-                        Level1_NextLevel=false;
-                    }
-
-
-                    if(Level1_Clock[6].getElapsedTime().asSeconds()>=0.1&&Level1_Background[1].getFillColor().a<125)
-                    {
-                        Level1_Background[1].setFillColor(Level1_Background[1].getFillColor()+Color(0,0,0,15));
-                        Level1_Text[0].setFillColor(Level1_Background[0].getFillColor()+Color(0,0,0,17));
-                        Level1_Clock[6].restart();
-                    }
-                    else if(Level1_Background[1].getFillColor().a>125){
-                        Level1_Text[0].setFillColor(Color(255,255,255,255));
-                    }
-                    if(Level1_Clock[7].getElapsedTime().asSeconds()>6){
-                        Level1=false;
-                        Menu=true;
-                        Menu_Once=true;
-                    }
-                        window.draw(Level1_Background[1]);
-                        window.draw(Level1_Text[0]);
-
+                    Level1_Clock[7].restart();
+                    Level1_Ball->speed=50;
+                    Level1_NextLevel=false;
                 }
 
+                if(Level1_Clock[6].getElapsedTime().asSeconds()>=0.1&&Level1_Background[1].getFillColor().a<125)
+                {
+                    Level1_Background[1].setFillColor(Level1_Background[1].getFillColor()+Color(0,0,0,15));
+                    Level1_Text[0].setFillColor(Level1_Background[0].getFillColor()+Color(0,0,0,17));
+                    Level1_Clock[6].restart();
+                }
+                else if(Level1_Background[1].getFillColor().a>125)
+                {
+                    Level1_Text[0].setFillColor(Color(255,255,255,255));
+                }
+                if(Level1_Clock[7].getElapsedTime().asSeconds()>6)
+                {
+                    Level1=false;
+                    Menu=true;
+                    Menu_Once=true;
+                }
+                window.draw(Level1_Background[1]);
+                window.draw(Level1_Text[0]);
+            }
         }
         if(Bar==true)
         {
@@ -900,14 +794,12 @@ int main()
                 Lost_Once=true;
             }
 
-//            cout<<Bar_Clock[0].getElapsedTime().asSeconds()<<endl;
             for(auto i:Bar_Background)
                 window.draw(i);
             for(int i=0; i<=3; i++)
                 window.draw(Bar_Text[i]);
             if(Bar_Clock[0].getElapsedTime().asSeconds()<2)
             {
-//                cout<<"drawing +1/+2"<<endl;
                 window.draw(Bar_Text[4]);
             }
             if(Bar_Clock[1].getElapsedTime().asSeconds()<2)
@@ -927,10 +819,10 @@ int main()
                 Lost_VxR=231;
                 Lost_VxG=76;
                 Lost_VxB=60;
-                cout<<"Lost true"<<endl;
 
                 Lost_Clock[1].restart();
-                for(int i=1;i<=9;i++) Lost_Fades[i]=false;
+                for(int i=1; i<=9; i++)
+                    Lost_Fades[i]=false;
 
                 Lost_Fades[0]=true;
 
@@ -973,12 +865,6 @@ int main()
                 Lost_Text.back().setFillColor(Color(255,255,255,0));
                 Lost_Text.back().setOutlineColor(Color(0,0,0,0));
                 Lost_Text.back().setOutlineThickness(2);
-
-//                Lost_Text.push_back(Text("TOTAL TIME: \n"+to_string(Lost_Clock[1].getElapsedTime().asSeconds()),Game_Font1,50));//lv1 time alive
-//                Lost_Text.back().setPosition(Vector2f(40,200));
-//                Lost_Text.back().setFillColor(Color::White);
-//                Lost_Text.back().setOutlineColor(Color::Black);
-//                Lost_Text.back().setOutlineThickness(2);
 
                 Lost_Text.push_back(Text("POINTS: \n"+to_string(Bar_Score),Game_Font1,50));
                 Lost_Text.back().setPosition(Vector2f(400,40));
@@ -1151,56 +1037,57 @@ int main()
                 Lost_Fades[9]=true;
             }//fade restart text
 
-            if(Lost_Fades[9]==true){
-            if(Mouse::getPosition(window).x>106&&Mouse::getPosition(window).y>446&&Mouse::getPosition(window).x<373&&Mouse::getPosition(window).y<603)
+            if(Lost_Fades[9]==true)
             {
-                //on menu box
-                Lost_Text[5].setCharacterSize(60);
-                Lost_Text[5].setFillColor(Color(243,156,18,255));
-                Lost_Text[5].setPosition(Vector2f(Lost_Background[1].getPosition().x+(Lost_Background[1].getSize().x/2)-15,Lost_Background[1].getPosition().y+(Lost_Background[1].getSize().y/2)-15));
-                if(OV_Mouse==true)
+                if(Mouse::getPosition(window).x>106&&Mouse::getPosition(window).y>446&&Mouse::getPosition(window).x<373&&Mouse::getPosition(window).y<603)
                 {
-                    Game_BarReset=true;
-                    Menu=true;
-                    Menu_Once=true;
-                    Lost=false;
+                    //on menu box
+                    Lost_Text[5].setCharacterSize(60);
+                    Lost_Text[5].setFillColor(Color(243,156,18,255));
+                    Lost_Text[5].setPosition(Vector2f(Lost_Background[1].getPosition().x+(Lost_Background[1].getSize().x/2)-15,Lost_Background[1].getPosition().y+(Lost_Background[1].getSize().y/2)-15));
+                    if(OV_Mouse==true)
+                    {
+                        Game_BarReset=true;
+                        Menu=true;
+                        Menu_Once=true;
+                        Lost=false;
+                    }
+                }
+                else
+                {
+                    Lost_Text[5].setCharacterSize(50);
+                    Lost_Text[5].setFillColor(Color(255,255,255,255));
+                    Lost_Text[5].setPosition(Vector2f(Lost_Background[1].getPosition().x+(Lost_Background[1].getSize().x/2),Lost_Background[1].getPosition().y+(Lost_Background[1].getSize().y/2)-10));
+                }
+
+                if(Mouse::getPosition(window).x>406&&Mouse::getPosition(window).y>446&&Mouse::getPosition(window).x<673&&Mouse::getPosition(window).y<603)
+                {
+                    //on restart box
+                    Lost_Text[6].setCharacterSize(60);
+                    Lost_Text[6].setFillColor(Color(243,156,18,255));
+                    Lost_Text[6].setPosition(Vector2f(Lost_Background[2].getPosition().x+(Lost_Background[2].getSize().x/2)-15,Lost_Background[2].getPosition().y+(Lost_Background[2].getSize().y/2)-15));
+                    if(OV_Mouse==true)
+                    {
+                        Game_BarReset=true;
+                        Level1=true;
+                        Level1_Once=true;
+                        Lost=false;
+                    }
+                }
+                else
+                {
+                    Lost_Text[6].setCharacterSize(50);
+                    Lost_Text[6].setFillColor(Color(255,255,255,255));
+                    Lost_Text[6].setPosition(Vector2f(Lost_Background[2].getPosition().x+(Lost_Background[2].getSize().x/2),Lost_Background[2].getPosition().y+(Lost_Background[2].getSize().y/2)-10));
                 }
             }
-            else{
-                Lost_Text[5].setCharacterSize(50);
-                Lost_Text[5].setFillColor(Color(255,255,255,255));
-                Lost_Text[5].setPosition(Vector2f(Lost_Background[1].getPosition().x+(Lost_Background[1].getSize().x/2),Lost_Background[1].getPosition().y+(Lost_Background[1].getSize().y/2)-10));
-            }
-
-            if(Mouse::getPosition(window).x>406&&Mouse::getPosition(window).y>446&&Mouse::getPosition(window).x<673&&Mouse::getPosition(window).y<603)
-            {
-                //on restart box
-                Lost_Text[6].setCharacterSize(60);
-                Lost_Text[6].setFillColor(Color(243,156,18,255));
-                Lost_Text[6].setPosition(Vector2f(Lost_Background[2].getPosition().x+(Lost_Background[2].getSize().x/2)-15,Lost_Background[2].getPosition().y+(Lost_Background[2].getSize().y/2)-15));
-                if(OV_Mouse==true)
-                {
-                    Game_BarReset=true;
-                    Level1=true;
-                    Level1_Once=true;
-                    Lost=false;
-                }
-            }
-            else{
-                Lost_Text[6].setCharacterSize(50);
-                Lost_Text[6].setFillColor(Color(255,255,255,255));
-                Lost_Text[6].setPosition(Vector2f(Lost_Background[2].getPosition().x+(Lost_Background[2].getSize().x/2),Lost_Background[2].getPosition().y+(Lost_Background[2].getSize().y/2)-10));
-            }
-            }
-
-
             window.draw(&Lost_Vertex[0],Lost_Vertex.size(),TrianglesFan);//Background gradient
-            for(auto i:Lost_Background) window.draw(i);
-            for(auto i:Lost_Text) window.draw(i);
-
+            for(auto i:Lost_Background)
+                window.draw(i);
+            for(auto i:Lost_Text)
+                window.draw(i);
         }
         window.draw(Menu_Background[1]);
-
         window.display();
     }
 

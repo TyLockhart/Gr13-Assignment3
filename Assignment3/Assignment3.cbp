@@ -21,6 +21,7 @@
 					<Add library="sfml-graphics-d" />
 					<Add library="sfml-window-d" />
 					<Add library="$(codeblocks)/../Box2D/libbox2d.a" />
+					<Add library="sfml-audio-d" />
 					<Add directory="$(codeblocks)/../SFML/lib/" />
 				</Linker>
 			</Target>
