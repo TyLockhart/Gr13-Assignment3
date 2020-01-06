@@ -12,6 +12,8 @@
 // Once a brick is hit by the ball, it falls. If a brick lands on the paddle, you gain +2 points,
 // if a brick lands on the floor, you gain +1 point.
 
+// Game has audio.
+
 // No special power-ups, focused more on functionability, keeping code clean/condensed & graphics
 // more than gameplay.
 
