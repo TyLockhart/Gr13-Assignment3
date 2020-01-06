@@ -1,3 +1,22 @@
+
+              //////////////////////
+
+// Instead of going to level 2, you get sent back to the menu. Using extra time to
+// work on final project instead.
+
+// Small chance of not needing to break one brick due to (Level1_CountOfBlocksLeft)
+// counting as 49 instead of 48 for some reason.
+
+              //////////////////////
+
+// Once a brick is hit by the ball, it falls. If a brick lands on the paddle, you gain +2 points,
+// if a brick lands on the floor, you gain +1 point.
+
+// No special power-ups, focused more on functionability, keeping code clean/condensed & graphics
+// more than gameplay.
+
+              //////////////////////
+
 #include "physics.h"
 #include <vector>
 #include <SFML/Audio.hpp>
@@ -35,7 +54,7 @@ int main()
     bool Game_BarReset=false;
 
     bool Menu_PaddleRight,Menu_PaddleLeft,Menu_CountDown,Menu_CountUp,Menu_DeleteBlock;
-    bool Level1_NextLevel,Level1_CounterOnce,Level1,Level1_Once,Level1_CountDown,Level1_CountUp,Level1_AllowCollisions,Level1_CreateBricks;
+    bool Level1_COBLSN,Level1_NextLevel,Level1_CounterOnce,Level1,Level1_Once,Level1_CountDown,Level1_CountUp,Level1_AllowCollisions,Level1_CreateBricks;
     bool Lost,Lost_Once,Lost_CountDown,Lost_CountUp;
     bool Bar,Bar_Once;
 
@@ -177,6 +196,8 @@ int main()
                 Menu_Background.back().setFillColor(Color(Menu_BrickColor));
                 Menu_Background.back().setOrigin(Vector2f(Menu_Background.back().getSize().x/2,Menu_Background.back().getSize().y/2));
                 Menu_Background.back().setPosition(Vector2f(400,520));
+                Menu_Background.back().setOutlineThickness(3);
+                Menu_Background.back().setOutlineColor(Color::Black);
 
                 Menu_Background.push_back(RectangleShape(Vector2f(800,800)));
                 Menu_Background.back().setFillColor(Color(255,255,255,60));
@@ -309,14 +330,15 @@ int main()
                 Level1_AllowCollisions=false;
                 Level1_CreateBricks=true;
                 Level1_CounterOnce=true;
-                Level1_NextLevel=true;
+                Level1_NextLevel=false;
+                Level1_COBLSN=true;
 
                 Bar=true;
                 Bar_Once=true;
 
                 Game_TotalScore=0;
                 Bar_Score=0;
-                Bar_Lives=999;
+                Bar_Lives=5;
                 Level1_CountOfBlocksLeft=0;
 
                 if(Game_BarReset==true)
@@ -665,7 +687,7 @@ int main()
                             Bar_Text[2].setString("POINTS: "+to_string(Bar_Score));
                         }
                         //falling brick hitting paddle
-                        if(physics::checkCollision(Level1_Brick[i])==true&&physics::getPosition(Level1_Brick[i]).y<730&&physics::getPosition(Level1_Brick[i]).y>630)
+                        if(physics::checkCollision(Level1_Brick[i])==true&&physics::checkCollision(Level1_Brick[i],Level1_Brick[i])!=true&&physics::getPosition(Level1_Brick[i]).y<730&&physics::getPosition(Level1_Brick[i]).y>630)
                         {
                             Level1_Brick[i]->SetTransform(b2Vec2(-10,-10),Level1_Brick[i]->GetAngle());
                             Level1_CountOfBlocksLeft++;
@@ -675,8 +697,9 @@ int main()
                             Bar_Clock[0].restart();
                             Bar_Text[2].setString("POINTS: "+to_string(Bar_Score));
                         }
+
                         //ball hitting floor
-                        if(Level1_Ball->checkCollision(Level1_Wall[3])==true&&Level1_CountOfBlocksLeft<47)
+                        if(Level1_Ball->checkCollision(Level1_Wall[3])==true&&(Level1_CountOfBlocksLeft!=48||Level1_CountOfBlocksLeft!=49))
                         {
                             cout<<"ball set to pad"<<endl;
                             Level1_Ball->removeBody();
@@ -694,9 +717,12 @@ int main()
             Level1_Paddle->updatePosition();
             window.draw(Level1_Background[0]);
             physics::displayWorld(World_Level1,window);
-            cout<<Level1_CountOfBlocksLeft<<endl;
-            if(Level1_CountOfBlocksLeft==49)
-            {
+
+            if(Level1_CountOfBlocksLeft>=48&&Level1_COBLSN==true){
+                Level1_NextLevel=true;
+                Level1_COBLSN=false;
+            }
+            if(Level1_CountOfBlocksLeft>=48){
                 if(Level1_NextLevel==true)
                 {
                     Level1_Clock[7].restart();
@@ -716,6 +742,7 @@ int main()
                 }
                 if(Level1_Clock[7].getElapsedTime().asSeconds()>6)
                 {
+                    cout<<"time to switch"<<endl;
                     Level1=false;
                     Menu=true;
                     Menu_Once=true;
@@ -723,6 +750,7 @@ int main()
                 window.draw(Level1_Background[1]);
                 window.draw(Level1_Text[0]);
             }
+
         }
         if(Bar==true)
         {
